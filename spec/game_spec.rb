@@ -9,10 +9,11 @@ describe Game do
       allow(game).to receive(:gets).and_return('John')
     end
 
-    it 'creates a new player' do
+    it 'creates a new player with the right parameters' do
       name = 'John'
-      expect(Player).to receive(:new).with(name)
-      game.create_player(1)
+      color = 'white'
+      expect(Player).to receive(:new).with(name, color)
+      game.create_player(1, 'white')
     end
   end
 end
