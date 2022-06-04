@@ -9,18 +9,13 @@ class Board
 
   def display
     add_background_color
-    content = grid.clone
-    content.each_with_index { |row, idx| row.unshift('  ', 8 - idx, ' ') }
-    content.each_with_index { |row, idx| row.append(' ', 8 - idx, '  ') }
-
     puts '     ' + ('A'..'H').to_a.join('  ') + '     '
-    (0..7).each { |i| puts content[i].join }
+    (1..8).each { |i| puts '  ' +  (9 - i).to_s + ' ' + grid[i - 1].join + ' ' + (9 - i).to_s + '  ' }
     puts '     ' + ('A'..'H').to_a.join('  ') + '     '
   end
 
   def add_background_color
-    grid_clone = grid.clone
-    grid_clone.each_with_index do |row, idx|
+    grid.each_with_index do |row, idx|
       if idx.even?
         row.each_with_index do |val, idx|
           if idx.even?
