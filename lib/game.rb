@@ -76,9 +76,9 @@ class Game
   end
 
   def get_coordinates(piece)
-    piece
+    column = piece[0, 1].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
-
+    columns[column]
   end
 
   def intro_message
