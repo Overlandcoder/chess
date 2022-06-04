@@ -6,7 +6,7 @@ require 'pry-byebug'
 class Game
   attr_reader :board, :current_player, :player1, :player2
 
-  TYPES = ['rook']
+  TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
 
   def initialize
     @board = Board.new
@@ -34,10 +34,10 @@ class Game
     TYPES.each { |type| create_piece(type, color, player) }
   end
 
-  def create_piece(type, color, player, i = 1)
-    i = 7 if type == 'pawn'
+  def create_piece(type, color, player, num  = 1)
+    num = 7 if type == 'pawn'
 
-    (0..i).each do |number|
+    (0..num).each do |number|
       piece = Piece.for(type, color, number)
       player.add_piece(piece)
     end
@@ -45,31 +45,51 @@ class Game
 
   def play_game
     setup
+    @current_player = player1
 
-    until board.game_over?
+    # until board.game_over?
       play_round
       @current_player = switch_turns
-    end
+    # end
     conclusion
   end
 
   def play_round
     board.display
+    player_turn
+    piece_to_move = choose_piece
+    piece_coordinates = get_coordinates(piece_to_move)
+    move = solicit_move
   end
 
   def switch_turns
     current_player == player1 ? player2 : player1
   end
 
+  def player_turn
+    puts "#{current_player}, it's your turn."
+  end
+
+  def choose_piece
+    puts 'Please select a piece to move:'
+    gets.chomp.capitalize
+  end
+
+  def get_coordinates(piece)
+    piece
+    columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
+
+  end
+
   def intro_message
     puts <<~INTRO
 Welcome to Chess!
 
-This is a two-player game. The game begins after each player's name has been entered.
-
-Good luck and have fun!
+This is a two-player game. To give you an idea of how the grid positioning
+works, the bottom-left rook is located at A1. Good luck and have fun!
     INTRO
   end
 end
 
-game = Game.new.setup
+game = Game.new
+game.setup
