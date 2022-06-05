@@ -27,24 +27,16 @@ class Board
     @grid_clone = grid.map(&:clone)
     @grid_clone.each_with_index do |row, idx|
       if idx.even?
-        row.each_with_index do |val, idx|
-          if idx.even?
-            piece = row[idx]
-            row[idx] = grey_bg + " #{piece ? piece : ' '} " + reset_code
-          else
-            piece = row[idx]
-            row[idx] = green_bg + " #{piece ? piece : ' '} " + reset_code
-          end
+        row.each_index do |idx|
+          piece = row[idx]
+          row[idx] = grey_bg + " #{piece ||= ' '} " + reset_code if idx.even?
+          row[idx] = green_bg + " #{piece ||= ' '} " + reset_code if idx.odd?
         end
       else
-        row.each_with_index do |val, idx|
-          if idx.odd?
-            piece = row[idx]
-            row[idx] = grey_bg + " #{piece ? piece : ' '} " + reset_code
-          else
-            piece = row[idx]
-            row[idx] = green_bg + " #{piece ? piece : ' '} " + reset_code
-          end
+        row.each_index do |idx|
+          piece = row[idx]
+          row[idx] = grey_bg + " #{piece ||= ' '} " + reset_code if idx.odd?
+          row[idx] = green_bg + " #{piece ||= ' '} " + reset_code if idx.even?
         end
       end
     end
