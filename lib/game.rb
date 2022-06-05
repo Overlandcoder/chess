@@ -59,7 +59,8 @@ class Game
     player_turn
     piece_to_move = choose_piece
     piece_coordinates = get_coordinates(piece_to_move)
-    move = solicit_move
+    destination = solicit_move
+    destination_coordinates = get_coordinates(destination)
   end
 
   def switch_turns
@@ -76,9 +77,16 @@ class Game
   end
 
   def get_coordinates(piece)
-    column = piece[0, 1].to_sym
+    column_letter = piece[0, 1].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
-    columns[column]
+    column = columns[column_letter]
+    row = 8 - piece[1, 1].to_i
+    [row, column]
+  end
+
+  def solicit_move
+    puts 'Enter the position that you want to move the piece to:'
+    gets.chomp.capitalize
   end
 
   def intro_message
