@@ -42,9 +42,11 @@ describe Board do
   end
 
   describe '#update_board' do
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+
     context 'when placing a piece on an empty square' do
       it 'updates the square from nil to the chosen piece' do
-        
+        expect { board.update_board(4, 0, rook) }.to change { board.grid[4][0] }.from(nil).to(rook)
       end
     end
   end
