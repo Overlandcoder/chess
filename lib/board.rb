@@ -1,8 +1,7 @@
-require 'colorize'
 require 'pry-byebug'
 
 class Board
-  attr_reader :grid
+  attr_reader :grid, :current_player
 
   def initialize
     create_grid
@@ -20,7 +19,7 @@ class Board
   end
 
   def column_headings
-    puts '     ' + ('A'..'H').to_a.join('  ') + '     '
+    puts "     #{('A'..'H').to_a.join('  ')}     "
   end
 
   def add_background_color
@@ -66,8 +65,12 @@ class Board
     grid[row][column]
   end
 
-  def rook_path_empty?
+  def within_board?
+    destination[0].between?(0, 7) && destination[1].between?(0, 7)
+  end
 
+  def contains_opponent_piece?(row, column)
+    square_at(row, column).color != current_player.color
   end
 
   def update_board
