@@ -1,7 +1,7 @@
 require 'pry-byebug'
 
 class Board
-  attr_reader :grid, :current_player
+  attr_reader :current_player
 
   def initialize
     create_grid
@@ -23,7 +23,7 @@ class Board
   end
 
   def add_background_color
-    @grid_clone = grid.map(&:clone)
+    @grid_clone = @grid.map(&:clone)
     @grid_clone.each_with_index do |row, idx|
       if idx.even?
         row.each_index do |idx|
@@ -57,24 +57,24 @@ class Board
     pieces.each do |piece|
       row = piece.position[0]
       column = piece.position[1]
-      grid[row][column] = piece
+      update_board(row, column, piece)
     end
   end
 
   def square_at(row, column)
-    grid[row][column]
+    @grid[row][column]
+  end
+
+  def update_board(row, column, piece)
+    @grid[row][column] = piece
   end
 
   def within_board?
     destination[0].between?(0, 7) && destination[1].between?(0, 7)
   end
 
-  def contains_opponent_piece?(row, column)
+  def opponent_piece?(row, column)
     square_at(row, column).color != current_player.color
-  end
-
-  def update_board
-    
   end
 
   private
