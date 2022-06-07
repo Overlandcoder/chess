@@ -58,10 +58,9 @@ class Game
   def play_round
     board.display
     player_turn
-    piece_to_move = choose_piece
-    piece_coordinates = get_coordinates(piece_to_move)
+    choose_piece
     destination = solicit_move
-    destination_coordinates = get_coordinates(destination)
+    destination_coordinates = coordinates(destination)
   end
 
   def switch_turns
@@ -80,15 +79,25 @@ class Game
 
   def choose_piece
     puts 'Select a piece to move:'
-    gets.chomp.capitalize
+    chosen_piece = gets.chomp.capitalize
+    row = coordinates(chosen_piece)[0]
+    column = coordinates(chosen_piece)[1]
+    return chosen_piece if own_piece?(row, column)
+
+    puts "That is your opponent's piece, please select your own piece!"
+    choose_piece
   end
 
-  def get_coordinates(piece)
+  def coordinates(piece)
     column_letter = piece[0, 1].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
     column = columns[column_letter]
     row = 8 - piece[1, 1].to_i
     [row, column]
+  end
+
+  def own_piece?(row, column)
+    board.square_at(row, column).color == current_player.color
   end
 
   def solicit_move
