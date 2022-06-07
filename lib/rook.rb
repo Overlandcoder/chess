@@ -23,13 +23,13 @@ class Rook
 
   def change_position(destination)
     @destination = destination
-
-    if valid_move?
-    end
+    board.update_board(destination[0], destination[1], self) if valid_move?
   end
 
   def valid_move?
-    board.within_board? && valid_path?
+    return if board.within_board? && valid_path?
+
+    'Invalid move, please try a different move.'
   end
 
   def valid_path?(direction)
@@ -41,7 +41,7 @@ class Rook
       next_square(direction)
 
       return false if square
-      return true if destination_reached(direction) && (square.nil? || board.contains_opponent_piece?)
+      return true if destination_reached(direction) && (square.nil? || board.opponent_piece?)
     end
   end
 
@@ -64,13 +64,5 @@ class Rook
     when 'left'
       @column -= 1
     end
-  end
-
-  def vertical_move?
-    destination[0] != position[0] && destination[1] == position[1]
-  end
-
-  def horizontal_move?
-    destination[0] == position[0] && destination[1] != position[1]
   end
 end
