@@ -2,14 +2,13 @@ require 'pry-byebug'
 require_relative 'board'
 
 class Rook
-  attr_reader :color, :number, :position, :destination, :board, :row, :column
+  attr_reader :color, :position, :destination, :board, :row, :column
 
   def initialize(color, number, board)
     @color = color
-    @number = number
     @board = board
     @position = [[7, 0], [7, 7]][number] if color == 'white'
-    @position = [[0, 0 ], [0, 7]][number] if color == 'black'
+    @position = [[0, 0], [0, 7]][number] if color == 'black'
   end
 
   def symbol
@@ -24,38 +23,22 @@ class Rook
     @destination = destination
 
     if valid_move?
-      
     end
   end
 
   def valid_move?
-    board.within_board? && path_empty? && (vertical_move? || horizontal_move?)
-  end
-
-  def path_empty?
-    if vertical_move?
-      start_row = position[0]
-      end_row = destination[0]
-      column = position[1]
-
-      (start_row - 1).downto(end_row).all? do |row|
-        board.square_at(row, column).nil? ||
-        board.square_at(end_row, column).color != board.square_at(start_row, column).color
-      end
-    # elsif horizontal_move?
-     # start_column = position[1]
-      # end_column = destination[1]
-    end
+    board.within_board? && valid_path?
   end
 
   def valid_path?(direction)
     @row = position[0]
     @column = position[1]
     square = board.square_at(row, column)
+    binding.pry
+
 
     until destination_reached(direction)
-      direction == 'up' ? @row -= 1 : @row += 1
-      direction == 'right' ? @column += 1 : @column -= 1
+      next_square(direction)
 
       return false if square
 
@@ -66,10 +49,23 @@ class Rook
   end
 
   def destination_reached(direction)
-    if direction == 'up' || direction == 'down'
+    if direction.include?('up') || direction.include?('down')
       row == destination[0]
-    elsif direction == 'right' || direction == 'left'
+    elsif direction.include?('right') || direction.include?('left')
       column == destination[1]
+    end
+  end
+
+  def next_square(direction)
+    case direction
+    when 'up'
+      @row -= 1
+    when 'down'
+      @row += 1
+    when 'right'
+      @column += 1
+    when 'left'
+      @column -= 1
     end
   end
 
