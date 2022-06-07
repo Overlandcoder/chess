@@ -6,7 +6,8 @@ require 'pry-byebug'
 class Game
   attr_reader :board, :current_player, :player1, :player2
 
-  TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
+  # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
+  TYPES = ['rook']
 
   def initialize
     @board = Board.new
@@ -18,27 +19,27 @@ class Game
     @player2 = create_player(2, 'black')
     pieces(player1.color, player1)
     pieces(player2.color, player2)
-    board.add_pieces_to_display(player1.pieces)
-    board.add_pieces_to_display(player2.pieces)
+    board.attach_piece(player1.pieces)
+    board.attach_piece(player2.pieces)
     board.display
   end
 
   def create_player(number, color)
     puts "\nPlayer #{number}, enter your name:"
-    # name = gets.chomp.capitalize
-    name = 'a'
+    name = gets.chomp.capitalize
+    # name = 'a'
     Player.new(name, color)
   end
 
   def pieces(color, player)
-    TYPES.each { |type| create_piece(type, color, player) }
+    TYPES.each { |type| create_piece(type, color, player, board) }
   end
 
-  def create_piece(type, color, player, num  = 1)
+  def create_piece(type, color, player, board, num  = 1)
     num = 7 if type == 'pawn'
 
     (0..num).each do |number|
-      piece = Piece.for(type, color, number)
+      piece = Piece.for(type, color, number, board)
       player.add_piece(piece)
     end
   end
@@ -64,7 +65,13 @@ class Game
   end
 
   def switch_turns
-    current_player == player1 ? player2 : player1
+    if current_player == player1
+      @current_player = player2
+      board.current_player = player2
+    else
+      @current_player = player1
+      board.current_player = player1
+    end
   end
 
   def player_turn
@@ -72,7 +79,7 @@ class Game
   end
 
   def choose_piece
-    puts 'Please select a piece to move:'
+    puts 'Select a piece to move:'
     gets.chomp.capitalize
   end
 
@@ -85,7 +92,7 @@ class Game
   end
 
   def solicit_move
-    puts 'Enter the position that you want to move the piece to:'
+    puts 'Enter the position to move the piece to:'
     gets.chomp.capitalize
   end
 
@@ -94,10 +101,11 @@ class Game
 Welcome to Chess!
 
 This is a two-player game. To give you an idea of how the grid positioning
-works, the bottom-left rook is located at A1. Good luck and have fun!
+works, the bottom-left rook is located at A1. When asked to choose a piece
+to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
     INTRO
   end
 end
 
-game = Game.new
-game.setup
+# game = Game.new
+# game.setup
