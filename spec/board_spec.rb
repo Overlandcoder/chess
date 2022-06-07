@@ -5,7 +5,7 @@ describe Board do
   subject(:board) { described_class.new }
 
   describe '#attach_piece' do
-    let(:white_rook) { double(Rook, color: 'white', number: 0, board: board) }
+    let(:white_rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
 
     before do
       allow(white_rook).to receive(:position).and_return([7, 0])
@@ -25,7 +25,7 @@ describe Board do
   end
 
   describe '#square_at' do
-    let(:black_rook) { double(Rook, color: 'black', number: 0, board: board) }
+    let(:black_rook) { instance_double(Rook, color: 'black', number: 0, board: board) }
 
     before do
       allow(black_rook).to receive(:position).and_return([0, 0])
@@ -38,6 +38,14 @@ describe Board do
 
     it 'returns nil for an empty square' do
       expect(board.square_at(5, 0)). to be nil
+    end
+  end
+
+  describe '#update_board' do
+    context 'when placing a piece on an empty square' do
+      it 'updates the square from nil to the chosen piece' do
+        
+      end
     end
   end
 end
