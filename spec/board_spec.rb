@@ -13,13 +13,13 @@ describe Board do
 
     it 'places the piece at the desired position' do
       board.attach_piece([white_rook])
-      square = board.grid[7][0]
+      square = board.square_at(7, 0)
       expect(square).to eq(white_rook)
     end
 
     it 'does not attach a piece to other squares' do
       board.attach_piece([white_rook])
-      square = board.grid[6][0]
+      square = board.square_at(6, 0)
       expect(square).to be nil
     end
   end
@@ -33,20 +33,20 @@ describe Board do
     end
 
     it 'returns the correct object (piece)' do
-      expect(board.square_at(0, 0)). to eq(black_rook)
+      expect(board.square_at(0, 0)).to eq(black_rook)
     end
 
     it 'returns nil for an empty square' do
-      expect(board.square_at(5, 0)). to be nil
+      expect(board.square_at(5, 0)).to be nil
     end
   end
 
   describe '#update_board' do
-    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:rook) { instance_double(Rook) }
 
     context 'when placing a piece on an empty square' do
       it 'updates the square from nil to the chosen piece' do
-        expect { board.update_board(4, 0, rook) }.to change { board.grid[4][0] }.from(nil).to(rook)
+        expect { board.update_board(4, 0, rook) }.to change { board.square_at(4, 0) }.from(nil).to(rook)
       end
     end
   end
