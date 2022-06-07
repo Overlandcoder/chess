@@ -5,8 +5,8 @@ require_relative '../lib/board'
 
 describe Game do
   subject(:game) { described_class.new }
-  let(:player1) { double(Player, name: 'a', color: 'white') }
-  let(:board) { double(Board) }
+  let(:player1) { instance_double(Player, name: 'a', color: 'white') }
+  let(:board) { instance_double(Board) }
 
   describe '#create_player' do
     before do
@@ -23,7 +23,7 @@ describe Game do
   end
 
   describe '#create_piece' do
-    let(:rook) { double(Rook, color: 'white', number: 0, board: board) }
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
 
     it 'sends .for to Piece' do
       allow(player1).to receive(:add_piece)
