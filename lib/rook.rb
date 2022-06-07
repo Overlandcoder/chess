@@ -2,19 +2,21 @@ require 'pry-byebug'
 require_relative 'board'
 
 class Rook
-  attr_reader :color, :position, :destination, :board, :row, :column
+  attr_reader :color, :number, :position, :destination, :board, :row, :column
 
   def initialize(color, number, board)
     @color = color
+    @number = number
     @board = board
     @position = [[7, 0], [7, 7]][number] if color == 'white'
     @position = [[0, 0], [0, 7]][number] if color == 'black'
   end
 
   def symbol
-    if color == 'white'
+    case color
+    when 'white'
       "\u001b[37;1m\u265C"
-    elsif color == 'black'
+    when 'black'
       "\u001b[30m\u265C"
     end
   end
@@ -34,17 +36,12 @@ class Rook
     @row = position[0]
     @column = position[1]
     square = board.square_at(row, column)
-    binding.pry
-
 
     until destination_reached(direction)
       next_square(direction)
 
       return false if square
-
-      if destination_reached(direction)
-        return true if square.nil? || board.contains_opponent_piece?
-      end
+      return true if destination_reached(direction) && (square.nil? || board.contains_opponent_piece?)
     end
   end
 
