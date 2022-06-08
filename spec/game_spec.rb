@@ -40,12 +40,13 @@ describe Game do
 
   describe '#choose_piece' do
     context 'when user chooses their own piece' do
-      let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+      let(:white_rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
 
       before do
-        allow(board).to receive(:square_at).and_return(rook)
+        allow(board).to receive(:square_at).and_return(white_rook)
         allow(game).to receive(:current_player).and_return(player1)
         allow(game).to receive(:gets).and_return('A1')
+        allow(game).to receive(:board).and_return(board)
       end
 
       it 'does not display error message' do
@@ -55,15 +56,22 @@ describe Game do
       end
     end
 
-    context 'when the user chooses an empty square, then their own piece' do
-      before do
+    context 'when the user chooses opponent piece, then their own piece' do
+      let(:black_rook) { instance_double(Rook, color: 'black', number: 1, board: board) }
+      let(:white_rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
 
+      before do
+        allow(board).to receive(:square_at).and_return(black_rook, white_rook)
+        allow(game).to receive(:current_player).and_return(player1)
+        allow(game).to receive(:gets).and_return('H8', 'A1')
+        allow(game).to receive(:board).and_return(board)
+        allow(game).to receive(:puts)
       end
 
       it 'displays error message once' do
-        allow(game).to receive(:gets).and_return('A2')
         error_message = "That is your opponent's piece, please select your own piece!"
         expect(game).to receive(:puts).with(error_message).once
+        game.choose_piece
       end
     end
   end
