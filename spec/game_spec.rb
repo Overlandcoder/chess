@@ -83,11 +83,16 @@ describe Game do
       allow(game).to receive(:current_player).and_return(player1)
       allow(game).to receive(:board).and_return(board)
       allow(board).to receive(:update_board).with(7, 0, rook)
-      allow(rook).to receive(:color)
     end
 
     it 'sends #square_at to Board' do
-      expect(board).to receive(:square_at).with(7, 0)
+      expect(board).to receive(:square_at).with(7, 0).and_return(rook)
+      game.own_piece?(7, 0)
+    end
+
+    it 'sends #color to Rook' do
+      allow(board).to receive(:square_at).with(7, 0).and_return(rook)
+      expect(rook).to receive(:color).and_return('white')
       game.own_piece?(7, 0)
     end
   end
