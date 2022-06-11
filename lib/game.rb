@@ -58,9 +58,8 @@ class Game
   def play_round
     board.display
     player_turn
-    choose_piece
-    destination = solicit_move
-    destination_coordinates = coordinates(destination)
+    piece_to_move_coordinates = choose_piece
+    destination_coordinates = choose_destination
   end
 
   def switch_turns
@@ -79,10 +78,12 @@ class Game
 
   def choose_piece
     puts 'Select a piece to move:'
-    chosen_piece = gets.chomp.capitalize
-    row = coordinates(chosen_piece)[0]
-    column = coordinates(chosen_piece)[1]
-    return chosen_piece if own_piece?(row, column)
+    user_input = gets.chomp.capitalize
+    row = coordinates(user_input)[0]
+    column = coordinates(user_input)[1]
+    piece_coordinates = [row, column]
+
+    return piece_coordinates if own_piece?(row, column)
 
     puts "That is your opponent's piece, please select your own piece!"
     choose_piece
@@ -97,12 +98,24 @@ class Game
   end
 
   def own_piece?(row, column)
-    board.square_at(row, column).color == current_player.color
+    piece_to_move = board.square_at(row, column)
+    piece_to_move.color == current_player.color
   end
 
-  def solicit_move
+  def choose_destination
     puts 'Enter the position to move the piece to:'
-    gets.chomp.capitalize
+    user_input = gets.chomp.capitalize
+    row = coordinates(user_input)[0]
+    column = coordinates(user_input)[1]
+    destination_coordinates = [row, column]
+
+    return destination_coordinates if square_empty? || !own_piece?(row, column)
+
+    puts 'Invalid move, please choose another square to move the piece to.'
+  end
+
+  def square_empty?(row, column)
+    board.square_at(row, column).nil?
   end
 
   def intro_message
