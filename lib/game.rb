@@ -58,8 +58,10 @@ class Game
   def play_round
     board.display
     player_turn
-    piece_to_move_coordinates = choose_piece
-    destination_coordinates = choose_destination
+    piece_row, piece_column = choose_piece
+    piece_to_move = board.square_at(piece_row, piece_column)
+    destination_row, destination_column = choose_destination
+    board.update_board(destination_row, destination_column, piece_to_move)
   end
 
   def switch_turns
