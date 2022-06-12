@@ -1,7 +1,7 @@
 class Coordinate
-  attr_reader :x, :y
+  attr_reader :row, :col
 
-  def initialize(x:, y:)
-    @x, @y = x, y
+  def initialize(row:, col:)
+    @row, @col = row, col
   end
 end
