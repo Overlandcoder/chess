@@ -1,6 +1,7 @@
 require_relative 'player'
 require_relative 'board'
 require_relative 'piece'
+require_relative 'coordinate'
 require 'pry-byebug'
 
 class Game
@@ -58,10 +59,15 @@ class Game
   def play_round
     board.display
     player_turn
-    piece_row, piece_column = choose_piece
-    piece_to_move = board.square_at(piece_row, piece_column)
-    destination_row, destination_column = choose_destination
-    board.update_board(destination_row, destination_column, piece_to_move)
+    piece_position = choose_piece
+    piece_to_move = board.square_at(piece_position[:x], piece_position[:y])
+    destination = choose_destination
+    remove_piece(destination[:x], destination[:y])
+    board.update_board(destination[:x], destination[:y], piece_to_move)
+  end
+
+  def remove_piece
+    # if !board.square_at(destination_row, destination_column).nil?
   end
 
   def switch_turns
@@ -83,9 +89,8 @@ class Game
     user_input = gets.chomp.capitalize
     row = coordinates(user_input)[0]
     column = coordinates(user_input)[1]
-    piece_coordinates = [row, column]
 
-    return piece_coordinates if own_piece?(row, column)
+    return Coordinate.new(x: row, y: column) if own_piece?(row, column)
 
     puts "That is your opponent's piece, please select your own piece!"
     choose_piece
@@ -109,9 +114,8 @@ class Game
     user_input = gets.chomp.capitalize
     row = coordinates(user_input)[0]
     column = coordinates(user_input)[1]
-    destination_coordinates = [row, column]
 
-    return destination_coordinates if square_empty? || !own_piece?(row, column)
+    return Coordinate.new(x: row, y: column) if square_empty? || !own_piece?(row, column)
 
     puts 'Invalid move, please choose another square to move the piece to.'
   end
