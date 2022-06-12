@@ -100,7 +100,6 @@ describe Game do
   describe '#remove_piece' do
     let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
     let(:player1) { instance_double(Player, name: 'a', color: 'white') }
-    let(:player2) { instance_double(Player, name: 'b', color: 'black') }
 
     before do
       allow(game).to receive(:opponent).and_return(player1)
@@ -108,7 +107,7 @@ describe Game do
       allow(game).to receive(:board).and_return(board)
     end
 
-    it 'removes the piece' do
+    it 'sends #remove_piece to Player' do
       expect(player1).to receive(:remove_piece).with(rook)
       game.remove_piece(7, 0)
     end
