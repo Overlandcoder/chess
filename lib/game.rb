@@ -5,7 +5,7 @@ require_relative 'coordinate'
 require 'pry-byebug'
 
 class Game
-  attr_reader :board, :current_player, :player1, :player2
+  attr_reader :board, :current_player, :player1, :player2, :piece_position, :destination
 
   # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
   TYPES = ['rook']
@@ -59,15 +59,20 @@ class Game
   def play_round
     board.display
     player_turn
-    piece_position = choose_piece
-    piece_to_move = board.square_at(piece_position[:x], piece_position[:y])
-    destination = choose_destination
-    remove_piece(destination[:x], destination[:y])
-    board.update_board(destination[:x], destination[:y], piece_to_move)
+    @piece_position = choose_piece
+    piece_to_move = board.square_at(piece_position.row, piece_position.col)
+    @destination = choose_destination
+    remove_opponent_piece
+    board.update_board(destination.row, destination.col, piece_to_move)
+    board.update_board(piece_position.row, piece_position.col, nil)
+    board.display
   end
 
-  def remove_piece
-    # if !board.square_at(destination_row, destination_column).nil?
+  def remove_opponent_piece
+    return if board.square_at(destination.row, destination.col).nil?
+
+    piece_to_remove = board.square_at(destination.row, destination.col)
+    opponent.remove_piece(piece_to_remove)
   end
 
   def switch_turns
@@ -80,17 +85,25 @@ class Game
     end
   end
 
+  def opponent
+    if current_player == player1
+      player2
+    else
+      player1
+    end
+  end
+
   def player_turn
-    puts "#{current_player}, it's your turn."
+    puts "#{current_player.name}, it's your turn."
   end
 
   def choose_piece
     puts 'Select a piece to move:'
     user_input = gets.chomp.capitalize
     row = coordinates(user_input)[0]
-    column = coordinates(user_input)[1]
+    col = coordinates(user_input)[1]
 
-    return Coordinate.new(x: row, y: column) if own_piece?(row, column)
+    return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
     puts "That is your opponent's piece, please select your own piece!"
     choose_piece
@@ -99,13 +112,13 @@ class Game
   def coordinates(piece)
     column_letter = piece[0, 1].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
-    column = columns[column_letter]
+    col = columns[column_letter]
     row = 8 - piece[1, 1].to_i
-    [row, column]
+    [row, col]
   end
 
-  def own_piece?(row, column)
-    piece_to_move = board.square_at(row, column)
+  def own_piece?(row, col)
+    piece_to_move = board.square_at(row, col)
     piece_to_move.color == current_player.color
   end
 
@@ -113,15 +126,15 @@ class Game
     puts 'Enter the position to move the piece to:'
     user_input = gets.chomp.capitalize
     row = coordinates(user_input)[0]
-    column = coordinates(user_input)[1]
+    col = coordinates(user_input)[1]
 
-    return Coordinate.new(x: row, y: column) if square_empty? || !own_piece?(row, column)
+    return Coordinate.new(row: row, col: col) if square_empty?(row, col) || !own_piece?(row, col)
 
     puts 'Invalid move, please choose another square to move the piece to.'
   end
 
-  def square_empty?(row, column)
-    board.square_at(row, column).nil?
+  def square_empty?(row, col)
+    board.square_at(row, col).nil?
   end
 
   def intro_message
@@ -135,5 +148,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-# game = Game.new
-# game.setup
+game = Game.new
+game.play_game
