@@ -6,9 +6,10 @@ describe Board do
 
   describe '#attach_piece' do
     let(:white_rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:position) { instance_double(Coordinate, row: 7, col: 0) }
 
     before do
-      allow(white_rook).to receive(:position).and_return([7, 0])
+      allow(white_rook).to receive(:position).and_return(position)
     end
 
     it 'places the piece at the desired position' do
@@ -26,9 +27,10 @@ describe Board do
 
   describe '#square_at' do
     let(:black_rook) { instance_double(Rook, color: 'black', number: 0, board: board) }
+    let(:position) { instance_double(Coordinate, row: 0, col: 0) }
 
     before do
-      allow(black_rook).to receive(:position).and_return([0, 0])
+      allow(black_rook).to receive(:position).and_return(position)
       board.attach_piece([black_rook])
     end
 
