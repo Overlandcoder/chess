@@ -5,7 +5,8 @@ require_relative 'coordinate'
 require 'pry-byebug'
 
 class Game
-  attr_reader :board, :current_player, :player1, :player2, :piece_position, :destination
+  attr_reader :board, :current_player, :player1, :player2, :piece_position,
+              :destination, :selected_piece
 
   # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
   TYPES = ['rook']
@@ -22,7 +23,6 @@ class Game
     pieces(player2.color, player2)
     board.attach_piece(player1.pieces)
     board.attach_piece(player2.pieces)
-    board.display
   end
 
   def create_player(number, color)
@@ -49,23 +49,22 @@ class Game
     setup
     @current_player = player1
 
-    # until board.game_over?
+    until player1.pieces.length == 0
       play_round
-      @current_player = switch_turns
-    # end
-    conclusion
+      @current_player = opponent
+    end
+    # conclusion
   end
 
   def play_round
     board.display
     player_turn
     @piece_position = choose_piece
-    piece_to_move = board.square_at(piece_position.row, piece_position.col)
+    @selected_piece = board.square_at(piece_position.row, piece_position.col)
     @destination = choose_destination
     remove_opponent_piece
-    board.update_board(destination.row, destination.col, piece_to_move)
-    board.update_board(piece_position.row, piece_position.col, nil)
-    board.display
+    board.update_board(destination.row, destination.col, selected_piece)
+    clear_old_position
   end
 
   def remove_opponent_piece
@@ -75,22 +74,12 @@ class Game
     opponent.remove_piece(piece_to_remove)
   end
 
-  def switch_turns
-    if current_player == player1
-      @current_player = player2
-      board.current_player = player2
-    else
-      @current_player = player1
-      board.current_player = player1
-    end
+  def clear_old_position
+    board.update_board(piece_position.row, piece_position.col, nil)
   end
 
   def opponent
-    if current_player == player1
-      player2
-    else
-      player1
-    end
+    current_player == player1 ? player2 : player1
   end
 
   def player_turn
@@ -118,8 +107,8 @@ class Game
   end
 
   def own_piece?(row, col)
-    piece_to_move = board.square_at(row, col)
-    piece_to_move.color == current_player.color
+    selected_piece = board.square_at(row, col)
+    selected_piece.color == current_player.color
   end
 
   def choose_destination
@@ -127,10 +116,13 @@ class Game
     user_input = gets.chomp.capitalize
     row = coordinates(user_input)[0]
     col = coordinates(user_input)[1]
+    destination_coordinates = Coordinate.new(row: row, col: col)
+    selected_piece.set_destination(destination_coordinates)
 
-    return Coordinate.new(row: row, col: col) if square_empty?(row, col) || !own_piece?(row, col)
+    return destination_coordinates if selected_piece.valid_move?
 
     puts 'Invalid move, please choose another square to move the piece to.'
+    choose_destination
   end
 
   def square_empty?(row, col)
@@ -148,5 +140,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-game = Game.new
-game.play_game
+# game = Game.new
+# game.play_game
