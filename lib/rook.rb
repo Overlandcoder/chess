@@ -9,12 +9,12 @@ class Rook
     @color = color
     @number = number
     @board = board
-    set_position
+    create_coordinate
     @row = position.row
     @column = position.col
   end
 
-  def set_position
+  def create_coordinate
     case color
     when 'white'
       start_row = [[7, 0], [7, 7]][number][0]
@@ -36,7 +36,7 @@ class Rook
 
     until destination_reached?
       next_square
-      binding.pry
+
       return false if square && !destination_reached?
       return true if destination_reached? &&
                      (square.nil? || board.opponent_piece?(row, column, color))
