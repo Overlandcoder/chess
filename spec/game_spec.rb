@@ -70,6 +70,26 @@ describe Game do
     end
   end
 
+  describe '#choose_destination' do
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+
+    context 'when given an invalid move, then a valid move' do
+      before do
+        allow(game).to receive(:gets).and_return('A4')
+        game.instance_variable_set(:@piece_to_move, rook)
+        allow(rook).to receive(:set_destination)
+        allow(rook).to receive(:valid_move?).and_return(false, true)
+        allow(game).to receive(:puts).with('Enter the position to move the piece to:')
+      end
+
+      it 'stops loop and does not display error message' do
+        error_message = 'Invalid move, please choose another square.'
+        expect(game).to receive(:puts).with(error_message).once
+        game.choose_destination
+      end
+    end
+  end
+
   describe '#own_piece?' do
     before do
       allow(game).to receive(:board).and_return(board)
@@ -97,6 +117,22 @@ describe Game do
     it 'sends #remove_piece to Player' do
       expect(player1).to receive(:remove_piece).with(rook)
       game.remove_opponent_piece
+    end
+  end
+
+  describe '#update_board' do
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:destination) { instance_double(Coordinate, row: 0, col: 0) }
+
+    before do
+      allow(game).to receive(:destination).and_return(destination)
+      allow(game).to receive(:board).and_return(board)
+      allow(game).to receive(:piece_to_move).and_return(rook)
+    end
+
+    it 'sends #update_board to Board' do
+      expect(board).to receive(:update_board).with(0, 0, rook)
+      game.update_board
     end
   end
 end
