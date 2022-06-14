@@ -127,14 +127,4 @@ describe Rook do
       end
     end
   end
-
-  describe '#change_position' do
-    context 'when the move is valid' do
-      xit 'sends #update_board to Board' do
-        allow(rook).to receive(:valid_move?).and_return(true)
-        expect(board).to receive(:update_board).with(4, 0, rook)
-        rook.change_position([4, 0])
-      end
-    end
-  end
 end
