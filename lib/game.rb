@@ -17,19 +17,16 @@ class Game
 
   def setup
     intro_message
-    @player1 = create_player(1, 'white')
-    @player2 = create_player(2, 'black')
+    @player1 = create_player('white')
+    @player2 = create_player('black')
     pieces(player1.color, player1)
     pieces(player2.color, player2)
     board.attach_piece(player1.pieces)
     board.attach_piece(player2.pieces)
   end
 
-  def create_player(number, color)
-    puts "\nPlayer #{number}, enter your name:"
-    name = gets.chomp.capitalize
-    # name = 'a'
-    Player.new(name, color)
+  def create_player(color)
+    Player.new(color)
   end
 
   def pieces(color, player)
@@ -87,7 +84,7 @@ class Game
   end
 
   def player_turn
-    puts "#{current_player.name}, it's your turn."
+    puts "#{current_player.color}, it's your turn."
   end
 
   def choose_piece
@@ -145,5 +142,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-game = Game.new
-game.play_game
+# game = Game.new
+# game.play_game
