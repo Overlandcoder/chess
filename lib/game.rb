@@ -13,10 +13,10 @@ class Game
 
   def initialize
     @board = Board.new
+    intro_message
   end
 
   def setup
-    intro_message
     @player1 = create_player('white')
     @player2 = create_player('black')
     pieces(player1.color, player1)
@@ -96,20 +96,8 @@ class Game
 
       return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
-      puts "That is your opponent's piece, please select your own piece!"
+      puts 'Please select your own piece!'
     end
-  end
-
-  def coordinates(piece)
-    column_letter = piece[0, 1].to_sym
-    columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
-    col = columns[column_letter]
-    row = 8 - piece[1, 1].to_i
-    [row, col]
-  end
-
-  def own_piece?(row, col)
-    !board.opponent_piece?(row, col, current_player.color)
   end
 
   def choose_destination
@@ -124,6 +112,18 @@ class Game
 
       puts 'Invalid move, please choose another square.'
     end
+  end
+
+  def coordinates(input)
+    column_letter = input[0, 1].to_sym
+    columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
+    col = columns[column_letter]
+    row = 8 - input[1, 1].to_i
+    [row, col]
+  end
+
+  def own_piece?(row, col)
+    !board.opponent_piece?(row, col, current_player.color)
   end
 
   def square_empty?(row, col)
@@ -141,5 +141,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-game = Game.new
-game.play_game
+# game = Game.new
+# game.play_game
