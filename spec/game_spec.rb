@@ -2,23 +2,22 @@ require_relative '../lib/game'
 require_relative '../lib/piece'
 require_relative '../lib/player'
 require_relative '../lib/board'
+require_relative '../lib/coordinate'
 
 describe Game do
   subject(:game) { described_class.new }
-  let(:player1) { instance_double(Player, name: 'a', color: 'white') }
+  let(:player1) { instance_double(Player, color: 'white') }
   let(:board) { instance_double(Board) }
 
   describe '#create_player' do
     before do
       allow(game).to receive(:puts)
-      allow(game).to receive(:gets).and_return('John')
     end
 
     it 'creates a new player with the right parameters' do
-      name = 'John'
       color = 'white'
-      expect(Player).to receive(:new).with(name, color)
-      game.create_player(1, 'white')
+      expect(Player).to receive(:new).with(color)
+      game.create_player('white')
     end
   end
 
@@ -97,19 +96,21 @@ describe Game do
     end
   end
 
-  describe '#remove_piece' do
+  describe '#remove_opponent_piece' do
     let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
-    let(:player1) { instance_double(Player, name: 'a', color: 'white') }
+    let(:player1) { instance_double(Player, color: 'white') }
+    let(:coordinate) { instance_double(Coordinate, row: 7, col: 0) }
 
     before do
       allow(game).to receive(:opponent).and_return(player1)
       allow(board).to receive(:square_at).and_return(rook)
       allow(game).to receive(:board).and_return(board)
+      allow(game).to receive(:destination).and_return(coordinate)
     end
 
     it 'sends #remove_piece to Player' do
       expect(player1).to receive(:remove_piece).with(rook)
-      game.remove_piece(7, 0)
+      game.remove_opponent_piece
     end
   end
 end
