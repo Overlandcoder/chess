@@ -1,13 +1,16 @@
 class Player
-  attr_reader :name, :color, :pieces
+  attr_reader :color, :pieces
 
-  def initialize(name, color)
-    @name = name
+  def initialize(color)
     @color = color
     @pieces = []
   end
 
   def add_piece(piece)
     @pieces << piece
+  end
+
+  def remove_piece(piece)
+    @pieces.delete(piece)
   end
 end
