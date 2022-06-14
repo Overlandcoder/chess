@@ -101,8 +101,3 @@ class Rook
     end
   end
 end
-
-def change_position(destination)
-  # @destination = destination
-  board.update_board(destination[0], destination[1], self) if valid_move?
-end
