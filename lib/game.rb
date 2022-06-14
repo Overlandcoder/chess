@@ -46,6 +46,7 @@ class Game
     setup
     @current_player = player1
 
+    # this 'until' condition will be changed later
     until player1.pieces.length.zero?
       board.display
       play_round
@@ -84,19 +85,19 @@ class Game
   end
 
   def player_turn
-    puts "#{current_player.color}, it's your turn."
+    puts "#{current_player.color.capitalize}, it's your turn."
   end
 
   def choose_piece
-    puts 'Select a piece to move:'
-    user_input = gets.chomp.capitalize
-    row = coordinates(user_input)[0]
-    col = coordinates(user_input)[1]
+    loop do
+      puts 'Select a piece to move:'
+      user_input = gets.chomp.capitalize
+      row, col = coordinates(user_input)
 
-    return Coordinate.new(row: row, col: col) if own_piece?(row, col)
+      return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
-    puts "That is your opponent's piece, please select your own piece!"
-    choose_piece
+      puts "That is your opponent's piece, please select your own piece!"
+    end
   end
 
   def coordinates(piece)
@@ -108,22 +109,20 @@ class Game
   end
 
   def own_piece?(row, col)
-    piece_to_move = board.square_at(row, col)
-    piece_to_move.color == current_player.color
+    !board.opponent_piece?(row, col, current_player.color)
   end
 
   def choose_destination
     loop do
       puts 'Enter the position to move the piece to:'
       user_input = gets.chomp.capitalize
-      row = coordinates(user_input)[0]
-      col = coordinates(user_input)[1]
+      row, col = coordinates(user_input)
       destination_coordinates = Coordinate.new(row: row, col: col)
       piece_to_move.set_destination(destination_coordinates)
 
       return destination_coordinates if piece_to_move.valid_move?
 
-      puts 'Invalid move, please choose another square to move the piece to.'
+      puts 'Invalid move, please choose another square.'
     end
   end
 
@@ -142,5 +141,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-# game = Game.new
-# game.play_game
+game = Game.new
+game.play_game
