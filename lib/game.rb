@@ -6,7 +6,7 @@ require 'pry-byebug'
 
 class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
-              :destination, :selected_piece
+              :destination, :piece_to_move
 
   # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
   TYPES = ['rook']
@@ -49,7 +49,8 @@ class Game
     setup
     @current_player = player1
 
-    until player1.pieces.length == 0
+    until player1.pieces.length.zero?
+      board.display
       play_round
       @current_player = opponent
     end
@@ -57,14 +58,17 @@ class Game
   end
 
   def play_round
-    board.display
     player_turn
-    @piece_position = choose_piece
-    @selected_piece = board.square_at(piece_position.row, piece_position.col)
+    piece_selection
     @destination = choose_destination
     remove_opponent_piece
-    board.update_board(destination.row, destination.col, selected_piece)
+    board.update_board(destination.row, destination.col, piece_to_move)
     clear_old_position
+  end
+
+  def piece_selection
+    @piece_position = choose_piece
+    @piece_to_move = board.square_at(piece_position.row, piece_position.col)
   end
 
   def remove_opponent_piece
@@ -107,22 +111,23 @@ class Game
   end
 
   def own_piece?(row, col)
-    selected_piece = board.square_at(row, col)
-    selected_piece.color == current_player.color
+    piece_to_move = board.square_at(row, col)
+    piece_to_move.color == current_player.color
   end
 
   def choose_destination
-    puts 'Enter the position to move the piece to:'
-    user_input = gets.chomp.capitalize
-    row = coordinates(user_input)[0]
-    col = coordinates(user_input)[1]
-    destination_coordinates = Coordinate.new(row: row, col: col)
-    selected_piece.set_destination(destination_coordinates)
+    loop do
+      puts 'Enter the position to move the piece to:'
+      user_input = gets.chomp.capitalize
+      row = coordinates(user_input)[0]
+      col = coordinates(user_input)[1]
+      destination_coordinates = Coordinate.new(row: row, col: col)
+      piece_to_move.set_destination(destination_coordinates)
 
-    return destination_coordinates if selected_piece.valid_move?
+      return destination_coordinates if piece_to_move.valid_move?
 
-    puts 'Invalid move, please choose another square to move the piece to.'
-    choose_destination
+      puts 'Invalid move, please choose another square to move the piece to.'
+    end
   end
 
   def square_empty?(row, col)
@@ -140,5 +145,5 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-# game = Game.new
-# game.play_game
+game = Game.new
+game.play_game
