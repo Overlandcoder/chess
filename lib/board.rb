@@ -1,8 +1,6 @@
 require 'pry-byebug'
 
 class Board
-  attr_reader :current_player
-
   def initialize
     create_grid
   end
@@ -55,8 +53,8 @@ class Board
 
   def attach_piece(pieces)
     pieces.each do |piece|
-      row = piece.position[0]
-      column = piece.position[1]
+      row = piece.position.row
+      column = piece.position.col
       update_board(row, column, piece)
     end
   end
@@ -73,8 +71,8 @@ class Board
     destination[0].between?(0, 7) && destination[1].between?(0, 7)
   end
 
-  def opponent_piece?(row, column)
-    square_at(row, column).color != current_player.color
+  def opponent_piece?(row, column, current_piece_color)
+    square_at(row, column).color != current_piece_color
   end
 
   private
