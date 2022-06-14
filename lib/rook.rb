@@ -28,12 +28,13 @@ class Rook
   end
 
   def valid_move?
+    @row = position.row
+    @column = position.col
+    move_direction
     (vertical_move? || horizontal_move?) && valid_path?
   end
 
   def valid_path?
-    move_direction
-
     until destination_reached?
       next_square
 
@@ -48,6 +49,19 @@ class Rook
       row == destination.row
     elsif direction.include?('right') || direction.include?('left')
       column == destination.col
+    end
+  end
+
+  def next_square
+    case direction
+    when 'up'
+      @row -= 1
+    when 'down'
+      @row += 1
+    when 'right'
+      @column += 1
+    when 'left'
+      @column -= 1
     end
   end
 
@@ -67,19 +81,6 @@ class Rook
     board.square_at(row, column)
   end
 
-  def next_square
-    case direction
-    when 'up'
-      @row -= 1
-    when 'down'
-      @row += 1
-    when 'right'
-      @column += 1
-    when 'left'
-      @column -= 1
-    end
-  end
-
   def vertical_move?
     destination.row != row && destination.col == column
   end
@@ -90,6 +91,11 @@ class Rook
 
   def set_destination(coordinate)
     @destination = coordinate
+  end
+
+  def update_position
+    position.update_row(destination.row)
+    position.update_col(destination.col)
   end
 
   def symbol
