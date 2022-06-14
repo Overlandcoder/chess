@@ -17,6 +17,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, nil, nil)
         allow(board).to receive(:opponent_piece?).and_return(false)
+        rook.instance_variable_set(:@direction, 'up')
       end
 
       it 'returns true' do
@@ -33,6 +34,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, nil, opponent_rook)
         allow(board).to receive(:opponent_piece?).and_return(true)
+        rook.instance_variable_set(:@direction, 'up')
       end
 
       it 'returns true' do
@@ -41,12 +43,15 @@ describe Rook do
     end
 
     context 'when direction is down and path is empty' do
+      subject(:rook) { described_class.new('black', 0, board) }
+
       let(:destination) { instance_double(Coordinate, row: 4, col: 0) }
 
       before do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, nil, nil, nil)
         allow(board).to receive(:opponent_piece?).and_return(true)
+        rook.instance_variable_set(:@direction, 'down')
       end
 
       it 'returns true' do
@@ -65,6 +70,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, opponent_rook)
         allow(board).to receive(:opponent_piece?).and_return(true)
+        rook.instance_variable_set(:@direction, 'down')
       end
 
       it 'returns true' do
@@ -79,6 +85,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, nil)
         allow(board).to receive(:opponent_piece?).and_return(false)
+        rook.instance_variable_set(:@direction, 'right')
       end
 
       it 'returns true' do
@@ -87,6 +94,8 @@ describe Rook do
     end
 
     context 'when direction is left and destination contains opponent piece' do
+      subject(:rook) { described_class.new('white', 1, board) }
+      
       let(:opponent_rook) { instance_double(described_class, color: 'black', number: 0, board: board) }
       let(:destination) { instance_double(Coordinate, row: 7, col: 5) }
 
@@ -94,6 +103,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(nil, nil)
         allow(board).to receive(:opponent_piece?).and_return(false)
+        rook.instance_variable_set(:@direction, 'left')
       end
 
       it 'returns true' do
@@ -109,6 +119,7 @@ describe Rook do
         rook.instance_variable_set(:@destination, destination)
         allow(board).to receive(:square_at).and_return(opponent_rook, opponent_rook)
         allow(board).to receive(:opponent_piece?).and_return(true)
+        rook.instance_variable_set(:@direction, 'right')
       end
 
       it 'returns false' do
