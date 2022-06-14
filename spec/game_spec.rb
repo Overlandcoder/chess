@@ -135,4 +135,17 @@ describe Game do
       game.update_board
     end
   end
+
+  describe '#update_piece_position' do
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+
+    before do
+      allow(game).to receive(:piece_to_move).and_return(rook)
+    end
+
+    it 'sends #update_position to Rook' do
+      expect(rook).to receive(:update_position)
+      game.update_piece_position
+    end
+  end
 end
