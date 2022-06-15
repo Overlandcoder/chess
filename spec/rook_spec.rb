@@ -216,4 +216,34 @@ describe Rook do
       rook.valid_move?
     end
   end
+
+  describe '#destination_reached?' do
+    context 'when direction is up' do
+      let(:destination) { instance_double(Coordinate, row: 7, col: 0) }
+
+      before do
+        allow(rook).to receive(:destination).and_return(destination)
+        allow(rook).to receive(:direction).and_return('up')
+      end
+
+      it 'sends #row to Coordinate' do
+        expect(destination).to receive(:row)
+        rook.destination_reached?
+      end
+    end
+
+    context 'when direction is left' do
+      let(:destination) { instance_double(Coordinate, row: 7, col: 7) }
+
+      before do
+        allow(rook).to receive(:destination).and_return(destination)
+        allow(rook).to receive(:direction).and_return('left')
+      end
+
+      it 'sends #col to Coordinate' do
+        expect(destination).to receive(:col)
+        rook.destination_reached?
+      end
+    end
+  end
 end
