@@ -195,4 +195,25 @@ describe Rook do
       end
     end
   end
+
+  describe '#valid_move?' do
+    let(:position) { instance_double(Coordinate, row: 7, col: 0) }
+    let(:destination) { instance_double(Coordinate, row: 2, col: 0) }
+
+    before do
+      allow(rook).to receive(:position).and_return(position)
+      allow(rook).to receive(:destination).and_return(destination)
+      allow(rook).to receive(:valid_path?).and_return(true)
+    end
+
+    it 'sends #row to Coordinate' do
+      expect(position).to receive(:row)
+      rook.valid_move?
+    end
+
+    it 'sends #col to Coordinate' do
+      expect(position).to receive(:col)
+      rook.valid_move?
+    end
+  end
 end
