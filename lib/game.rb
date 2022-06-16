@@ -9,14 +9,14 @@ class Game
               :destination, :piece_to_move
 
   # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
-  TYPES = ['rook']
+  TYPES = ['rook', 'knight']
 
   def initialize
     @board = Board.new
-    intro_message
   end
 
   def setup
+    intro_message
     @player1 = create_player('white')
     @player2 = create_player('black')
     pieces(player1.color, player1)
@@ -60,7 +60,8 @@ class Game
     piece_selection
     @destination = choose_destination
     remove_opponent_piece
-    board.update_board(destination.row, destination.col, piece_to_move)
+    update_board
+    update_piece_position
     clear_old_position
   end
 
@@ -101,17 +102,17 @@ class Game
   end
 
   def choose_destination
-    loop do
-      puts 'Enter the position to move the piece to:'
-      user_input = gets.chomp.capitalize
-      row, col = coordinates(user_input)
-      destination_coordinates = Coordinate.new(row: row, col: col)
-      piece_to_move.set_destination(destination_coordinates)
+    puts 'Enter the position to move the piece to:'
+    user_input = gets.chomp.capitalize
+    row, col = coordinates(user_input)
+    destination_coordinates = Coordinate.new(row: row, col: col)
+    piece_to_move.set_destination(destination_coordinates)
 
-      return destination_coordinates if piece_to_move.valid_move?
+    return destination_coordinates if piece_to_move.valid_move? &&
+                                      nil_or_opponent?(row, col)
 
-      puts 'Invalid move, please choose another square.'
-    end
+    puts 'Invalid move, please choose another square:'
+    choose_destination
   end
 
   def coordinates(input)
@@ -123,7 +124,20 @@ class Game
   end
 
   def own_piece?(row, col)
-    !board.opponent_piece?(row, col, current_player.color)
+    board.square_at(row, col).color == current_player.color
+  end
+
+  def nil_or_opponent?(row, col)
+    board.square_at(row, col).nil? ||
+    board.square_at(row, col).color != current_player.color
+  end
+
+  def update_board
+    board.update_board(destination.row, destination.col, piece_to_move)
+  end
+
+  def update_piece_position
+    piece_to_move.update_position
   end
 
   def square_empty?(row, col)
@@ -141,5 +155,4 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-# game = Game.new
-# game.play_game
+# Game.new.play_game
