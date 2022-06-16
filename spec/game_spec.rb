@@ -73,18 +73,45 @@ describe Game do
   describe '#choose_destination' do
     let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
 
-    context 'when given an invalid move, then a valid move' do
+    context 'when given a valid move' do
       before do
-        allow(game).to receive(:gets).and_return('A4')
         game.instance_variable_set(:@piece_to_move, rook)
-        allow(rook).to receive(:set_destination)
-        allow(rook).to receive(:valid_move?).and_return(false, true)
+        allow(rook).to receive(:valid_move?).and_return(true)
         allow(game).to receive(:puts).with('Enter the position to move the piece to:')
+        allow(game).to receive(:gets).and_return('a8')
+        allow(rook).to receive(:set_destination)
       end
 
       it 'stops loop and does not display error message' do
-        error_message = 'Invalid move, please choose another square.'
-        expect(game).to receive(:puts).with(error_message).once
+        error_message = 'Invalid move, please choose another square:'
+        expect(game).not_to receive(:puts).with(error_message)
+        game.choose_destination
+      end
+
+      it 'sends #new to Coordinate' do
+        expect(Coordinate).to receive(:new).with(row: 0, col: 0)
+        game.choose_destination
+      end
+    end
+
+    context 'when given two invalid moves, then a valid move' do
+      before do
+        game.instance_variable_set(:@piece_to_move, rook)
+        allow(rook).to receive(:valid_move?).and_return(false, false, true)
+        allow(game).to receive(:gets).and_return('a2')
+        allow(rook).to receive(:set_destination)
+      end
+
+      it 'sends #new to Coordinate' do
+        allow(game).to receive(:puts)
+        expect(Coordinate).to receive(:new).with(row: 6, col: 0).exactly(3).times
+        game.choose_destination
+      end
+
+      it 'displays error message twice' do
+        allow(game).to receive(:puts).with('Enter the position to move the piece to:')
+        error_message = 'Invalid move, please choose another square:'
+        expect(game).to receive(:puts).with(error_message).twice
         game.choose_destination
       end
     end
