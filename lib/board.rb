@@ -39,22 +39,35 @@ class Board
     end
   end
 
-  def highlight(row, col)
+  def highlight_piece(row, col)
     piece = @grid[row][col]
-    @grid_clone[row][col] = red_bg + " #{piece.symbol} " + reset_code
+    @grid_clone[row][col] = orange_bg + " #{piece.symbol} " + reset_code
+  end
+
+  def highlight_possible_moves(positions)
+    positions.each do |position|
+      row = position[0]
+      col = position[1]
+      piece = @grid[row][col]
+      @grid_clone[row][col] = bright_green_bg + " #{piece ? piece.symbol : ' '} " + reset_code
+    end
     display(true)
   end
 
   def grey_bg
-    "\u001b[47m"
+    "\e[48;2;#{181};#{183};#{147}m"
   end
 
   def green_bg
-    "\u001b[42m"
+    "\e[48;2;#{84};#{140};#{42}m"
   end
 
-  def red_bg
-    "\u001b[41;1m"
+  def orange_bg
+    "\e[48;2;#{255};#{181};#{87}m"
+  end
+
+  def bright_green_bg
+    "\e[48;2;#{193};#{255};#{134}m"
   end
 
   def reset_code
@@ -81,8 +94,9 @@ class Board
     destination[0].between?(0, 7) && destination[1].between?(0, 7)
   end
 
-  def opponent_piece?(row, column, current_piece_color)
-    square_at(row, column).color != current_piece_color
+  def nil_or_opponent?(row, col, current_piece_color)
+    square_at(row, col).nil? ||
+    square_at(row, col).color != current_piece_color
   end
 
   private
