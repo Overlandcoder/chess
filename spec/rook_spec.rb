@@ -246,4 +246,15 @@ describe Rook do
       end
     end
   end
+
+  describe '#create_coordinate' do
+    before do
+      allow(rook).to receive(:number).and_return(0)
+    end
+
+    it 'sends #new to Coordinate' do
+      expect(Coordinate).to receive(:new).with(row: 7, col: 0)
+      rook.create_coordinate
+    end
+  end
 end
