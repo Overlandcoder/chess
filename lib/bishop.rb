@@ -9,15 +9,14 @@ class Bishop
     @board = board
     create_coordinate
     @moves = []
-    generate_possible_moves
   end
 
   def create_coordinate
     case color
-    when 'white'
+    when :white
       start_row, start_col = [[7, 2], [7, 5]][number]
       @position = Coordinate.new(row: start_row, col: start_col)
-    when 'black'
+    when :black
       start_row, start_col = [[0, 2], [0, 5]][number]
       @position = Coordinate.new(row: start_row, col: start_col)
     end
@@ -43,22 +42,22 @@ class Bishop
     POSSIBLE_MOVES.each do |move|
       row = position.row
       col = position.col
-      while row.between?(0, 7) && col.between?(0, 7)
+      loop do
         row += move[0]
         col += move[1]
-        next unless row.between?(0, 7) && col.between?(0, 7) &&
+        break unless row.between?(0, 7) && col.between?(0, 7) &&
                     board.nil_or_opponent?(row, col, self.color)
         @moves << [row, col]
-        break if !board.square_at(row, col).nil?
+        break unless board.square_at(row, col).nil?
       end
     end
   end
 
   def symbol
-    if color == 'white'
-      "\u001b[37;1m\u265D"
-    elsif color == 'black'
-      "\u001b[30m\u265D"
+    if color == :white
+      "♝"
+    elsif color == :black
+      "\u001b[30m♝"
     end
   end
 end
