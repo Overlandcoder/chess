@@ -1,11 +1,23 @@
 class Queen
-  attr_reader :color, :number, :position
+  attr_reader :color, :number, :position, :destination, :board
 
-  def initialize(color, number)
+  def initialize(color, number, board)
     @color = color
     @number = number
-    @position = [7, 3] if color == 'white'
-    @position = [0, 3] if color == 'black'
+    @board = board
+    create_coordinate
+    @moves = []
+  end
+
+  def create_coordinate
+    case color
+    when 'white'
+      start_row, start_col = [7, 3]
+      @position = Coordinate.new(row: start_row, col: start_col)
+    when 'black'
+      start_row, start_col = [0, 3]
+      @position = Coordinate.new(row: start_row, col: start_col)
+    end
   end
 
   def symbol
