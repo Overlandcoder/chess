@@ -2,91 +2,33 @@ require 'pry-byebug'
 require_relative 'board'
 
 class Rook
-  attr_reader :color, :number, :position, :destination, :board, :row, :column,
-              :direction
+  attr_reader :color, :number, :position, :destination, :board, :moves
+
+  POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
   def initialize(color, number, board)
     @color = color
     @number = number
     @board = board
     create_coordinate
-    @row = position.row
-    @column = position.col
+    @moves = []
   end
 
   def create_coordinate
     case color
-    when 'white'
-      start_row = [[7, 0], [7, 7]][number][0]
-      start_col = [[7, 0], [7, 7]][number][1]
+    when :white
+      start_row, start_col = [[7, 0], [7, 7]][number]
       @position = Coordinate.new(row: start_row, col: start_col)
-    when 'black'
-      start_row = [[0, 0], [0, 7]][number][0]
-      start_col = [[0, 0], [0, 7]][number][1]
+    when :black
+      start_row, start_col = [[0, 0], [0, 7]][number]
       @position = Coordinate.new(row: start_row, col: start_col)
     end
   end
 
   def valid_move?
-    @row = position.row
-    @column = position.col
-    move_direction
-    (vertical_move? || horizontal_move?) && valid_path?
-  end
-
-  def valid_path?
-    until destination_reached?
-      next_square
-
-      return false if square && !destination_reached?
-      return true if destination_reached? &&
-                     (square.nil? || board.opponent_piece?(row, column, color))
+    @moves.any? do |move|
+      move[0] == destination.row && move[1] == destination.col
     end
-  end
-
-  def destination_reached?
-    if direction.include?('up') || direction.include?('down')
-      row == destination.row
-    elsif direction.include?('right') || direction.include?('left')
-      column == destination.col
-    end
-  end
-
-  def next_square
-    case direction
-    when 'up'
-      @row -= 1
-    when 'down'
-      @row += 1
-    when 'right'
-      @column += 1
-    when 'left'
-      @column -= 1
-    end
-  end
-
-  def move_direction
-    if destination.row < row
-      @direction = 'up'
-    elsif destination.row > row
-      @direction = 'down'
-    elsif destination.col < column
-      @direction = 'left'
-    elsif destination.col > column
-      @direction = 'right'
-    end
-  end
-
-  def square
-    board.square_at(row, column)
-  end
-
-  def vertical_move?
-    destination.row != row && destination.col == column
-  end
-
-  def horizontal_move?
-    destination.row == row && destination.col != column
   end
 
   def set_destination(coordinate)
@@ -96,14 +38,30 @@ class Rook
   def update_position
     position.update_row(destination.row)
     position.update_col(destination.col)
+    @moves.clear
+  end
+
+  def generate_possible_moves
+    POSSIBLE_MOVES.each do |move|
+      row = position.row
+      col = position.col
+      loop do
+        row += move[0]
+        col += move[1]
+        break unless row.between?(0, 7) && col.between?(0, 7) &&
+                                          board.nil_or_opponent?(row, col, self.color)
+        @moves << [row, col]
+        break unless board.square_at(row, col).nil?
+      end
+    end
   end
 
   def symbol
     case color
-    when 'white'
-      "\u001b[37;1m\u265C"
-    when 'black'
-      "\u001b[30m\u265C"
+    when :white
+      "♜"
+    when :black
+      "\u001b[30m♜"
     end
   end
 end
