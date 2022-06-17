@@ -8,8 +8,7 @@ class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
               :destination, :piece_to_move
 
-  # TYPES = ['rook', 'knight', 'bishop', 'queen', 'king']
-  TYPES = ['rook', 'knight']
+  TYPES = [:rook, :knight, :bishop, :queen, :king]
 
   def initialize
     @board = Board.new
@@ -17,8 +16,8 @@ class Game
 
   def setup
     intro_message
-    @player1 = create_player('white')
-    @player2 = create_player('black')
+    @player1 = create_player(:white)
+    @player2 = create_player(:black)
     pieces(player1.color, player1)
     pieces(player2.color, player2)
     board.attach_piece(player1.pieces)
@@ -33,8 +32,9 @@ class Game
     TYPES.each { |type| create_piece(type, color, player, board) }
   end
 
-  def create_piece(type, color, player, board, num  = 1)
-    num = 7 if type == 'pawn'
+  def create_piece(type, color, player, board, num = 1)
+    num = 7 if type == :pawn
+    num = 0 if type == :king || type == :queen
 
     (0..num).each do |number|
       piece = Piece.for(type, color, number, board)
@@ -56,8 +56,13 @@ class Game
   end
 
   def play_round
+    current_player.pieces.each { |piece| puts piece.symbol }
     player_turn
     piece_selection
+    board.highlight_piece(piece_position.row, piece_position.col)
+    piece_to_move.hold_opponent_pieces(opponent.pieces) if piece_to_move.symbol.include?('♚')
+    piece_to_move.generate_possible_moves
+    board.highlight_possible_moves(piece_to_move.moves)
     @destination = choose_destination
     remove_opponent_piece
     update_board
@@ -155,4 +160,4 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-# Game.new.play_game
+Game.new.play_game
