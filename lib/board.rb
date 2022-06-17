@@ -5,8 +5,8 @@ class Board
     create_grid
   end
 
-  def display
-    add_background_color
+  def display(highlighted = false)
+    add_background_color unless highlighted
     column_headings
 
     (0..7).each do |row|
@@ -39,12 +39,22 @@ class Board
     end
   end
 
+  def highlight(row, col)
+    piece = @grid[row][col]
+    @grid_clone[row][col] = red_bg + " #{piece.symbol} " + reset_code
+    display(true)
+  end
+
   def grey_bg
     "\u001b[47m"
   end
 
   def green_bg
     "\u001b[42m"
+  end
+
+  def red_bg
+    "\u001b[41;1m"
   end
 
   def reset_code
