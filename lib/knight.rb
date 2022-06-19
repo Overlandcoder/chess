@@ -1,7 +1,7 @@
 require_relative 'board'
 
 class Knight
-  attr_reader :color, :number, :position, :destination, :moves, :board
+  attr_reader :color, :number, :position, :destination, :possible_moves, :board
 
   POSSIBLE_MOVES = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                     [2, 1], [2, -1], [-2, 1], [-2, -1]]
@@ -11,7 +11,7 @@ class Knight
     @number = number
     @board = board
     create_coordinate
-    @moves = []
+    @possible_moves = []
   end
 
   def create_coordinate
@@ -36,16 +36,17 @@ class Knight
     @destination = coordinate
   end
 
-  def update_position
-    position.update_row(destination.row)
-    position.update_col(destination.col)
-    @moves.clear
+  def update_position(row = destination.row, col = destination.col)
+    position.update_row(row)
+    position.update_col(col)
   end
 
   def generate_possible_moves
+    @possible_moves.clear
+
     (0..7).each do |row|
       (0..7).each do |col|
-        @moves << [row, col] if valid_move?(row, col) &&
+        @possible_moves << [row, col] if valid_move?(row, col) &&
                                 board.nil_or_opponent?(row, col, self.color)
       end
     end
