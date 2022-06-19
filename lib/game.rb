@@ -47,27 +47,45 @@ class Game
     @current_player = player1
 
     # this 'until' condition will be changed later
-    until player1.pieces.length.zero?
-      board.display
-      play_round
-      @current_player = opponent
-    end
+    play_round
     # conclusion
   end
 
   def play_round
-    current_player.pieces.each { |piece| puts piece.symbol }
-    player_turn
-    piece_selection
-    board.highlight_piece(piece_position.row, piece_position.col)
-    piece_to_move.hold_opponent_pieces(opponent.pieces) if piece_to_move.symbol.include?('♚')
-    piece_to_move.generate_possible_moves
-    board.highlight_possible_moves(piece_to_move.moves)
-    @destination = choose_destination
-    remove_opponent_piece
-    update_board
-    update_piece_position
-    clear_old_position
+    loop do
+      board.display
+      player_turn
+      piece_selection
+      board.highlight_piece(piece_position.row, piece_position.col)
+      piece_to_move.generate_possible_moves
+      remove_check_moves
+      p piece_to_move.possible_moves
+      board.highlight_possible_moves(piece_to_move.possible_moves)
+      break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
+      @destination = choose_destination
+      remove_opponent_piece
+      update_board
+      update_piece_position
+      clear_old_position
+      @current_player = opponent
+    end
+  end
+
+  def generate_opponent_moves
+    possible_moves = []
+    opponent.pieces.each do |piece|
+      if piece_to_move == king
+        piece.generate_possible_moves(true)
+      else
+        piece.generate_possible_moves
+      end
+      possible_moves << piece.possible_moves
+    end
+    possible_moves.flatten(1)
+  end
+
+  def king
+    current_player.pieces.find { |piece| piece.symbol.include?('♚') }
   end
 
   def piece_selection
@@ -114,17 +132,45 @@ class Game
     piece_to_move.set_destination(destination_coordinates)
 
     return destination_coordinates if piece_to_move.valid_move? &&
-                                      nil_or_opponent?(row, col)
+                                      nil_or_opponent?(row, col) &&
+                                      !king_in_check?
 
     puts 'Invalid move, please choose another square:'
     choose_destination
   end
 
+  def remove_check_moves
+    current_row = piece_to_move.position.row
+    current_col = piece_to_move.position.col
+    board.update_board(current_row, current_col, nil)
+
+    piece_to_move.possible_moves.each do |move|
+      current_board_piece = board.square_at(move[0], move[1])
+
+      piece_to_move.update_position(move[0], move[1])
+      board.update_board(move[0], move[1], piece_to_move)
+      
+      if king_in_check?
+        piece_to_move.possible_moves.reject { |move| move == move }
+      end
+      piece_to_move.update_position(current_row, current_col)
+      board.update_board(move[0], move[1], current_board_piece)
+      board.update_board(move[0], move[1], piece_to_move)
+    end
+  end
+
+  def king_in_check?
+    opponent_moves = generate_opponent_moves
+    p opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
+
+    opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
+  end
+
   def coordinates(input)
-    column_letter = input[0, 1].to_sym
+    column_letter = input[0].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
     col = columns[column_letter]
-    row = 8 - input[1, 1].to_i
+    row = 8 - input[1].to_i
     [row, col]
   end
 
