@@ -53,15 +53,6 @@ class King
     end
   end
 
-  def checkmate?
-    if @possible_moves.empty?
-      puts 'Checkmate.'
-      return true
-    else
-      return false
-    end
-  end
-
   def symbol
     if color == :white
       "\u001b[37;1m♚"
