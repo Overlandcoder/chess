@@ -72,7 +72,7 @@ class Game
   def generate_opponent_moves
     possible_moves = []
     opponent.pieces.each do |piece|
-      if piece_to_move == king
+      if piece == king
         piece.generate_possible_moves(true)
       else
         piece.generate_possible_moves
@@ -126,8 +126,7 @@ class Game
     piece_to_move.set_destination(destination_coordinates)
 
     return destination_coordinates if piece_to_move.valid_move? &&
-                                      nil_or_opponent?(row, col) &&
-                                      !king_in_check?
+                                      nil_or_opponent?(row, col)
 
     puts 'Invalid move, please choose another square:'
     choose_destination
@@ -147,26 +146,32 @@ class Game
   def remove_check_moves
     current_row = piece_to_move.position.row
     current_col = piece_to_move.position.col
-    board.update_board(current_row, current_col, nil)
-
+    moves_to_delete = []
+    
     piece_to_move.possible_moves.each do |move|
+      board.update_board(current_row, current_col, nil)
       current_board_piece = board.square_at(move[0], move[1])
 
       piece_to_move.update_position(move[0], move[1])
       board.update_board(move[0], move[1], piece_to_move)
       
       if king_in_check?
-        piece_to_move.possible_moves.reject! { |move| move == move }
+        moves_to_delete << move
       end
       piece_to_move.update_position(current_row, current_col)
       board.update_board(move[0], move[1], current_board_piece)
       board.update_board(current_row, current_col, piece_to_move)
     end
+
+    moves_to_delete.each { |move| piece_to_move.possible_moves.delete(move) }
   end
 
   def king_in_check?
     opponent_moves = generate_opponent_moves
-    opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
+
+    opponent_moves.any? do |opponent_move|
+      opponent_move == [king.position.row, king.position.col]
+    end
   end
 
   def coordinates(input)
@@ -201,7 +206,6 @@ class Game
   def intro_message
     puts <<~INTRO
 Welcome to Chess!
-
 This is a two-player game. To give you an idea of how the grid positioning
 works, the bottom-left rook is located at A1. When asked to choose a piece
 to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
