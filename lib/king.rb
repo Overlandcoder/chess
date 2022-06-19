@@ -1,6 +1,6 @@
 class King
-  attr_reader :color, :number, :position, :destination, :moves, :board,
-              :opponent_pieces
+  attr_reader :color, :number, :position, :destination, :possible_moves,
+              :board, :opponent_pieces
 
   POSSIBLE_MOVES = [[-1, -1], [0, -1], [1, -1], [1, 0],
                     [1, 1], [0, 1], [-1, 1], [-1, 0]]
@@ -36,25 +36,21 @@ class King
     @destination = coordinate
   end
 
-  def update_position
-    position.update_row(destination.row)
-    position.update_col(destination.col)
-    @possible_moves.clear
-    @possible_moves_made += 1
+  def update_position(row = destination.row, col = destination.col)
+    position.update_row(row)
+    position.update_col(col)
+    @moves_made += 1
   end
   
   def generate_possible_moves(opponent = false)
+    @possible_moves.clear
+
     (0..7).each do |row|
       (0..7).each do |col|
         @possible_moves << [row, col] if valid_move?(row, col) &&
-                                board.nil_or_opponent?(row, col, color) &&
-                                (!in_check?(row, col) unless opponent)
+                                board.nil_or_opponent?(row, col, color)
       end
     end
-  end
-
-  def in_check?(row, col)
-    @opponent_moves.any? { |move| move == [row, col] }
   end
 
   def checkmate?
@@ -64,10 +60,6 @@ class King
     else
       return false
     end
-  end
-
-  def hold_opponent_moves(opponent_moves)
-    @opponent_moves = opponent_moves
   end
 
   def symbol
