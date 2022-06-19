@@ -54,12 +54,10 @@ class Game
   def play_round
     loop do
       board.display
-      player_turn
       piece_selection
       board.highlight_piece(piece_position.row, piece_position.col)
       piece_to_move.generate_possible_moves
       remove_check_moves
-      p piece_to_move.possible_moves
       board.highlight_possible_moves(piece_to_move.possible_moves)
       break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
       @destination = choose_destination
@@ -108,25 +106,21 @@ class Game
     current_player == player1 ? player2 : player1
   end
 
-  def player_turn
-    puts "#{current_player.color.capitalize}, it's your turn."
-  end
-
   def choose_piece
-    loop do
-      puts 'Select a piece to move:'
-      user_input = gets.chomp.capitalize
-      row, col = coordinates(user_input)
+    puts "#{current_player.color.capitalize}, select a piece to move:"
+    user_input = gets.chomp.capitalize
+    row, col = coordinates(user_input)
+    
+    return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
-      return Coordinate.new(row: row, col: col) if own_piece?(row, col)
-
-      puts 'Please select your own piece!'
-    end
+    puts 'Please select your own piece!'
+    choose_piece
   end
 
   def choose_destination
     puts 'Enter the position to move the piece to:'
     user_input = gets.chomp.capitalize
+    return reselect if user_input == 'Retry'
     row, col = coordinates(user_input)
     destination_coordinates = Coordinate.new(row: row, col: col)
     piece_to_move.set_destination(destination_coordinates)
@@ -137,6 +131,17 @@ class Game
 
     puts 'Invalid move, please choose another square:'
     choose_destination
+  end
+
+  def reselect
+    board.display
+    piece_selection
+    board.highlight_piece(piece_position.row, piece_position.col)
+    piece_to_move.generate_possible_moves
+    remove_check_moves
+    board.highlight_possible_moves(piece_to_move.possible_moves)
+    return if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
+    @destination = choose_destination
   end
 
   def remove_check_moves
@@ -151,18 +156,16 @@ class Game
       board.update_board(move[0], move[1], piece_to_move)
       
       if king_in_check?
-        piece_to_move.possible_moves.reject { |move| move == move }
+        piece_to_move.possible_moves.reject! { |move| move == move }
       end
       piece_to_move.update_position(current_row, current_col)
       board.update_board(move[0], move[1], current_board_piece)
-      board.update_board(move[0], move[1], piece_to_move)
+      board.update_board(current_row, current_col, piece_to_move)
     end
   end
 
   def king_in_check?
     opponent_moves = generate_opponent_moves
-    p opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
-
     opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
   end
 
