@@ -69,19 +69,6 @@ class Game
     end
   end
 
-  def generate_opponent_moves
-    possible_moves = []
-    opponent.pieces.each do |piece|
-      if piece == king
-        piece.generate_possible_moves(true)
-      else
-        piece.generate_possible_moves
-      end
-      possible_moves << piece.possible_moves
-    end
-    possible_moves.flatten(1)
-  end
-
   def king
     current_player.pieces.find { |piece| piece.symbol.include?('♚') }
   end
@@ -149,29 +136,49 @@ class Game
     moves_to_delete = []
     
     piece_to_move.possible_moves.each do |move|
-      board.update_board(current_row, current_col, nil)
-      current_board_piece = board.square_at(move[0], move[1])
-
-      piece_to_move.update_position(move[0], move[1])
-      board.update_board(move[0], move[1], piece_to_move)
-      
-      if king_in_check?
-        moves_to_delete << move
-      end
-      piece_to_move.update_position(current_row, current_col)
-      board.update_board(move[0], move[1], current_board_piece)
-      board.update_board(current_row, current_col, piece_to_move)
+      opponent_piece = board.square_at(move[0], move[1])
+      opponent.hold_piece(opponent_piece) if opponent_piece
+      simulate_move(current_row, current_col, move, opponent_piece)
+      @opponent_moves = generate_opponent_moves
+      moves_to_delete << move if king_in_check?
+      revert_move(current_row, current_col, move)
     end
 
     moves_to_delete.each { |move| piece_to_move.possible_moves.delete(move) }
   end
 
-  def king_in_check?
-    opponent_moves = generate_opponent_moves
+  def simulate_move(row, col, move, opponent_piece)
+    board.update_board(row, col, nil)
+    piece_to_move.update_position(move[0], move[1])
+    board.update_board(move[0], move[1], piece_to_move)
+  end
 
-    opponent_moves.any? do |opponent_move|
+  def revert_move(row, col, move)
+    piece_to_move.update_position(row, col)
+    board.update_board(move[0], move[1], opponent.piece_held)
+    board.update_board(row, col, piece_to_move)
+    p opponent.pieces.count(nil)
+    opponent.add_piece(opponent.piece_held)
+    p opponent.pieces.count(nil)
+  end
+
+  def king_in_check?
+    @opponent_moves.any? do |opponent_move|
       opponent_move == [king.position.row, king.position.col]
     end
+  end
+
+  def generate_opponent_moves
+    possible_moves = []
+    opponent.pieces.each do |piece|
+      if piece == king
+        piece.generate_possible_moves(true)
+      else
+        piece.generate_possible_moves
+      end
+      possible_moves << piece.possible_moves
+    end
+    possible_moves.flatten(1)
   end
 
   def coordinates(input)
