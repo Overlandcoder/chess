@@ -136,10 +136,12 @@ class Game
     moves_to_delete = []
     
     piece_to_move.possible_moves.each do |move|
-      opponent_piece = board.square_at(move[0], move[1])
+      opponent_piece_shallow = board.square_at(move[0], move[1])
+      return if opponent_piece_shallow.nil? && !king_in_check?
+
+      opponent_piece = Marshal.load(Marshal.dump(opponent_piece_shallow))
       opponent.hold_piece(opponent_piece) if opponent_piece
-      simulate_move(current_row, current_col, move, opponent_piece)
-      @opponent_moves = generate_opponent_moves
+      simulate_move(current_row, current_col, move, opponent_piece_shallow)
       moves_to_delete << move if king_in_check?
       revert_move(current_row, current_col, move)
     end
@@ -149,6 +151,7 @@ class Game
 
   def simulate_move(row, col, move, opponent_piece)
     board.update_board(row, col, nil)
+    opponent.remove_piece(opponent_piece)
     piece_to_move.update_position(move[0], move[1])
     board.update_board(move[0], move[1], piece_to_move)
   end
@@ -157,15 +160,37 @@ class Game
     piece_to_move.update_position(row, col)
     board.update_board(move[0], move[1], opponent.piece_held)
     board.update_board(row, col, piece_to_move)
-    p opponent.pieces.count(nil)
     opponent.add_piece(opponent.piece_held)
-    p opponent.pieces.count(nil)
   end
 
   def king_in_check?
-    @opponent_moves.any? do |opponent_move|
+    opponent_moves = generate_opponent_moves
+
+    opponent_moves.any? do |opponent_move|
       opponent_move == [king.position.row, king.position.col]
     end
+  end
+
+  def king_in_check2?
+    opponent.pieces.each do |piece|
+      piece_moves = generate_piece_moves
+      piece_moves.any? do |move|
+        move == [king.position.row, king.position.col] &&
+        piece_to_move.possible_moves.none? { |piece_move| piece_move == move }
+      end
+    end
+  end
+
+  def generate_piece_moves
+    possible_moves = []
+
+    if piece == king
+      piece.generate_possible_moves(true)
+    else
+      piece.generate_possible_moves
+    end
+    possible_moves << piece.possible_moves
+    possible_moves
   end
 
   def generate_opponent_moves
@@ -179,6 +204,17 @@ class Game
       possible_moves << piece.possible_moves
     end
     possible_moves.flatten(1)
+  end
+
+  def generate_opponent_positions
+    positions = []
+
+    opponent.pieces.each do |piece|
+      row = piece.position.row
+      col = piece.position.col
+      positions << [row, col]
+    end
+    positions
   end
 
   def coordinates(input)
