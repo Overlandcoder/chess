@@ -56,6 +56,7 @@ class Game
       board.display
       piece_selection
       board.highlight_piece(piece_position.row, piece_position.col)
+      binding.pry if piece_to_move.title == 'Bishop'
       piece_to_move.generate_possible_moves
       remove_check_moves
       board.highlight_possible_moves(piece_to_move.possible_moves)
@@ -108,6 +109,7 @@ class Game
     puts 'Enter the position to move the piece to:'
     user_input = gets.chomp.capitalize
     return reselect if user_input == 'Retry'
+
     row, col = coordinates(user_input)
     destination_coordinates = Coordinate.new(row: row, col: col)
     piece_to_move.set_destination(destination_coordinates)
@@ -131,19 +133,19 @@ class Game
   end
 
   def remove_check_moves
-    current_row = piece_to_move.position.row
-    current_col = piece_to_move.position.col
+    current_row = Marshal.load(Marshal.dump(piece_to_move.position.row))
+    current_col = Marshal.load(Marshal.dump(piece_to_move.position.col))
     moves_to_delete = []
     
     piece_to_move.possible_moves.each do |move|
       opponent_piece_shallow = board.square_at(move[0], move[1])
       return if opponent_piece_shallow.nil? && !king_in_check?
-
       opponent_piece = Marshal.load(Marshal.dump(opponent_piece_shallow))
       opponent.hold_piece(opponent_piece) if opponent_piece
       simulate_move(current_row, current_col, move, opponent_piece_shallow)
       moves_to_delete << move if king_in_check?
       revert_move(current_row, current_col, move)
+      opponent.clear_piece_held
     end
 
     moves_to_delete.each { |move| piece_to_move.possible_moves.delete(move) }
@@ -176,7 +178,7 @@ class Game
       piece_moves = generate_piece_moves
       piece_moves.any? do |move|
         move == [king.position.row, king.position.col] &&
-        piece_to_move.possible_moves.none? { |piece_move| piece_move == move }
+          piece_to_move.possible_moves.none? { |piece_move| piece_move == move }
       end
     end
   end
@@ -231,7 +233,7 @@ class Game
 
   def nil_or_opponent?(row, col)
     board.square_at(row, col).nil? ||
-    board.square_at(row, col).color != current_player.color
+      board.square_at(row, col).color != current_player.color
   end
 
   def update_board
@@ -239,11 +241,8 @@ class Game
   end
 
   def update_piece_position
+    binding.pry if piece_to_move.title == 'Knight'
     piece_to_move.update_position
-  end
-
-  def square_empty?(row, col)
-    board.square_at(row, col).nil?
   end
 
   def intro_message
