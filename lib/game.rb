@@ -179,9 +179,7 @@ class Game
   end
 
   def remove_king_checks
-    p king.possible_moves
     king.possible_moves.delete_if { |move| @opponent_moves.include?(move) }
-    p king.possible_moves
   end
 
   def king_in_check2?
