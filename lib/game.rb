@@ -56,7 +56,6 @@ class Game
       board.display
       piece_selection
       board.highlight_piece(piece_position.row, piece_position.col)
-      binding.pry if piece_to_move.title == 'Bishop'
       piece_to_move.generate_possible_moves
       remove_check_moves
       board.highlight_possible_moves(piece_to_move.possible_moves)
@@ -133,6 +132,18 @@ class Game
   end
 
   def remove_check_moves
+    current_row = piece_to_move.position.row
+    current_col = piece_to_move.position.col
+    moves_to_delete = []
+    
+    piece_to_move.possible_moves.each do |move|
+      moves_to_delete << move if king_in_check? unless piece_to_move.title == 'King'
+    end
+    remove_king_check_moves
+    moves_to_delete.each { |move| piece_to_move.possible_moves.delete(move) }
+  end
+
+  def remove_check_moves_old
     current_row = Marshal.load(Marshal.dump(piece_to_move.position.row))
     current_col = Marshal.load(Marshal.dump(piece_to_move.position.col))
     moves_to_delete = []
@@ -165,25 +176,39 @@ class Game
     opponent.add_piece(opponent.piece_held)
   end
 
-  def king_in_check?
-    opponent_moves = generate_opponent_moves
-
-    opponent_moves.any? do |opponent_move|
-      opponent_move == [king.position.row, king.position.col]
+  def must_remove_check(position)
+    if piece_to_move.possible_moves.include?(position)
+      piece_to_move.possible_moves = [position]
     end
   end
 
-  def king_in_check2?
-    opponent.pieces.each do |piece|
-      piece_moves = generate_piece_moves
-      piece_moves.any? do |move|
-        move == [king.position.row, king.position.col] &&
-          piece_to_move.possible_moves.none? { |piece_move| piece_move == move }
+  def remove_king_check_moves
+    opponent_moves = generate_opponent_moves
+
+    opponent_moves.any? do |opponent_move|
+      king.possible_moves.any? do |king_move|
+        king_move == opponent_move
+        king.possible_moves.delete(king_move)
       end
     end
   end
 
-  def generate_piece_moves
+  def king_in_check?
+    opponent.pieces.any? do |piece|
+
+      piece_moves = generate_piece_moves(piece)
+      piece_moves.any? do |move|
+        if move == [king.position.row, king.position.col]
+          must_remove_check([piece.position.row, piece.position.col])
+          piece_to_move.possible_moves.none? do |piece_move|
+            piece_move == [piece.position.row, piece.position.col]
+          end
+        end
+      end
+    end
+  end
+
+  def generate_piece_moves(piece)
     possible_moves = []
 
     if piece == king
@@ -192,7 +217,7 @@ class Game
       piece.generate_possible_moves
     end
     possible_moves << piece.possible_moves
-    possible_moves
+    possible_moves.flatten(1)
   end
 
   def generate_opponent_moves
@@ -241,7 +266,6 @@ class Game
   end
 
   def update_piece_position
-    binding.pry if piece_to_move.title == 'Knight'
     piece_to_move.update_position
   end
 
