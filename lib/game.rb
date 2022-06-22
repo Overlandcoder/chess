@@ -148,9 +148,7 @@ class Game
     moves_to_delete = []
     
     piece_to_move.possible_moves.each do |move|
-      @opponent_copy = Marshal.load(Marshal.dump(opponent))
       @board_copy = Marshal.load(Marshal.dump(board))
-      @king_copy = Marshal.load(Marshal.dump(king))
       simulate_move(current_row, current_col, move)
       moves_to_delete << move if king_in_check?
       remove_king_checks
@@ -160,30 +158,26 @@ class Game
   end
 
   def simulate_move(row, col, move)
-    @board_copy.update_board(row, col, nil) # change old position to nil
+    @board_copy.update_board(row, col, nil)
     @board_copy.update_board(move[0], move[1], piece_to_move)
   end
 
   def king_in_check?
-    @opponent_moves = generate_opponent_moves
-
-    @opponent_moves.any? do |opponent_move|
-      opponent_move == [king.position.row, king.position.col]
-    end
+    opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
   end
 
   def remove_king_checks
-    king.possible_moves.delete_if { |move| @opponent_moves.include?(move) }
+    king.possible_moves.delete_if { |move| opponent_moves.include?(move) }
   end
 
-  def generate_opponent_moves
+  def opponent_moves
     possible_moves = []
     (0..7).each do |row|
       (0..7).each do |col|
         piece = @board_copy.square_at(row, col)
         next if piece.nil?
 
-        if piece.color == @opponent_copy.color
+        if piece.color == opponent.color
           if piece == king
             piece.generate_possible_moves(true)
           else
@@ -194,18 +188,6 @@ class Game
       end
     end
     possible_moves.flatten(1)
-  end
-
-  def generate_piece_moves
-    possible_moves = []
-
-    if piece == king
-      piece.generate_possible_moves(true)
-    else
-      piece.generate_possible_moves
-    end
-    possible_moves << piece.possible_moves
-    possible_moves
   end
 
   def coordinates(input)
