@@ -36,7 +36,7 @@ class Game
     num = 7 if type == :pawn
     num = 0 if type == :king || type == :queen
 
-    (0..0).each do |number|
+    (0..num).each do |number|
       piece = Piece.for(type, color, number, board)
       board.add_piece(piece)
     end
@@ -56,9 +56,9 @@ class Game
       board.display
       piece_selection
       board.highlight_piece(piece_position.row, piece_position.col)
-      send_updated_board
       piece_to_move.generate_possible_moves
       remove_check_moves
+      add_castling_moves if piece_to_move.title == 'King'
       board.highlight_possible_moves(piece_to_move.possible_moves)
       break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
       @destination = choose_destination
@@ -74,16 +74,11 @@ class Game
     board.display
     piece_selection
     board.highlight_piece(piece_position.row, piece_position.col)
-    send_updated_board
     piece_to_move.generate_possible_moves
     remove_check_moves
     board.highlight_possible_moves(piece_to_move.possible_moves)
     return if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
     @destination = choose_destination
-  end
-
-  def send_updated_board
-    current_player.pieces.each { |piece| piece.update_board(board) }
   end
 
   def king
@@ -162,8 +157,8 @@ class Game
     @board_copy.update_board(move[0], move[1], piece_to_move)
   end
 
-  def king_in_check?
-    opponent_moves.any? { |move| move == [king.position.row, king.position.col] }
+  def king_in_check?(row = king.position.row, col = king.position.col)
+    opponent_moves.any? { |move| move == [row, col] }
   end
 
   def remove_king_checks
@@ -186,6 +181,37 @@ class Game
     possible_moves.flatten(1)
   end
 
+  def right_rook(row = 0)
+    row = 7 if current_player.color == :white
+    board.square_at(row, 0)
+  end
+
+  def left_rook(row = 0)
+    row = 7 if current_player.color == :white
+    board.square_at(row, 0)
+  end
+
+  def add_castling_moves(row = 0)
+    row = 7 if current_player.color == :white
+    return if king_in_check?
+    return unless king.moves_made.zero? &&
+                  (right_rook.moves_made.zero? || left_rook.moves_made.zero?)
+
+    king.possible_moves << [row, 6] if kingside_castle(row)
+    king.possible_moves << [row, 2] if queenside_castle(row)
+    p king.possible_moves
+  end
+
+  def kingside_castle(row)
+    (board.square_at(row, 5).nil? && board.square_at(row, 6).nil?) &&
+    (!king_in_check?(row, 5) && !king_in_check?(row, 6))
+  end
+
+  def queenside_castle(row)
+    (board.square_at(row, 3).nil? && board.square_at(row, 2).nil?) &&
+    (!king_in_check?(row, 3) && !king_in_check?(row, 2))
+  end
+
   def coordinates(input)
     column_letter = input[0].to_sym
     columns = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
@@ -195,6 +221,7 @@ class Game
   end
 
   def own_piece?(row, col)
+    board.square_at(row, col) &&
     board.square_at(row, col).color == current_player.color
   end
 
