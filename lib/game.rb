@@ -171,23 +171,19 @@ class Game
   end
 
   def opponent_moves
-    possible_moves = []
+    moves = []
     (0..7).each do |row|
       (0..7).each do |col|
         piece = @board_copy.square_at(row, col)
         next if piece.nil?
 
         if piece.color == opponent.color
-          if piece == king
-            piece.generate_possible_moves(true)
-          else
-            piece.generate_possible_moves
-          end
+          piece.generate_possible_moves
           possible_moves << piece.possible_moves
         end
       end
     end
-    possible_moves.flatten(1)
+    moves.flatten(1)
   end
 
   def coordinates(input)
