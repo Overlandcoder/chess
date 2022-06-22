@@ -1,8 +1,22 @@
 require 'pry-byebug'
 
 class Board
+  attr_reader :white_pieces, :black_pieces
+
   def initialize
     create_grid
+    @white_pieces = []
+    @black_pieces = []
+  end
+
+  def add_piece(piece)
+    @white_pieces << piece if piece.color == :white
+    @black_pieces << piece if piece.color == :black
+  end
+
+  def remove_piece(piece)
+    @white_pieces.delete(piece) if piece.color == :white
+    @black_pieces.delete(piece) if piece.color == :black
   end
 
   def display(highlighted = false)
@@ -74,11 +88,11 @@ class Board
     "\u001b[0m"
   end
 
-  def attach_piece(pieces)
+  def attach_pieces(pieces)
     pieces.each do |piece|
       row = piece.position.row
       column = piece.position.col
-      update_board(row, column, piece)
+      update(row, column, piece)
     end
   end
 
@@ -86,7 +100,7 @@ class Board
     @grid[row][column]
   end
 
-  def update_board(row, column, piece)
+  def update(row, column, piece)
     @grid[row][column] = piece
   end
 
