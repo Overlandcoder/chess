@@ -150,7 +150,7 @@ class Game
     piece_to_move.possible_moves.each do |move|
       @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move)
-      moves_to_delete << move if king_in_check?
+      moves_to_delete << move if king_in_check? && piece_to_move.title != 'King'
       remove_king_checks
     end
 
@@ -171,7 +171,7 @@ class Game
   end
 
   def opponent_moves
-    moves = []
+    possible_moves = []
     (0..7).each do |row|
       (0..7).each do |col|
         piece = @board_copy.square_at(row, col)
@@ -183,7 +183,7 @@ class Game
         end
       end
     end
-    moves.flatten(1)
+    possible_moves.flatten(1)
   end
 
   def coordinates(input)
