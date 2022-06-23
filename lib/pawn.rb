@@ -49,23 +49,36 @@ class Pawn
       @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
                                         board.square_at(row, col).nil?
     end
-    add_attacking_moves
+    attacking_moves.each { |move| @possible_moves << move }
   end
 
   def remove_double_moves
     @moves.delete_if { |move| (move[0].abs > 1) && moves_made.positive? }
   end
 
-  def add_attacking_moves
-    attacking_moves = [[-1, 1], [-1, -1]] if color == :white
-    attacking_moves = [[1, 1], [1, -1]] if color == :black
+  def attacking_moves(removing_king_checks = false)
+    pawn_attack_moves = [[-1, 1], [-1, -1]] if color == :white
+    pawn_attack_moves = [[1, 1], [1, -1]] if color == :black
+    possible_attack_moves = []
 
-    attacking_moves.each do |move|
+    pawn_attack_moves.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
-      @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
-                                  board.opponent?(row, col, color)
+      possible_attack_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
+                                  opponent?(removing_king_checks, row, col)
     end
+    possible_attack_moves
+  end
+
+  def attacking_moves_only
+    @possible_moves.clear
+    attacking_moves(true)
+  end
+
+  def opponent?(removing_king_checks = false, row, col)
+    return true if removing_king_checks
+
+    board.opponent?(row, col, color)
   end
 
   def symbol
