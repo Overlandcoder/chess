@@ -8,16 +8,18 @@ require_relative 'pawn'
 class Piece
   def self.for(type, color, number, board)
     case type
-    when 'rook'
+    when :rook
       Rook
-    #when 'knight'
-     # Knight
-    #when 'bishop'
-     # Bishop
-    #when 'queen'
-     # Queen
-    #when 'king'
-     # King
+    when :knight
+      Knight
+    when :bishop
+      Bishop
+    when :queen
+      Queen
+    when :king
+      King
+    when :pawn
+      Pawn
     end.new(color, number, board)
   end
 end
