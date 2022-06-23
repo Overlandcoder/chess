@@ -1,7 +1,6 @@
 class Pawn
-  attr_reader :color, :number, :position, :destination, :board
-
-  POSSIBLE_MOVES = [[-1, 0], [1, 0], [-2, 0], [2, 0]]
+  attr_reader :color, :number, :position, :destination, :board, :title,
+              :possible_moves, :moves_made
 
   def initialize(color, number, board)
     @color = color
@@ -11,18 +10,18 @@ class Pawn
     @possible_moves = []
     @title = 'Pawn'
     @moves_made = 0
+    @moves = [[-1, 0], [-2, 0]] if color == :white
+    @moves = [[1, 0], [2, 0]] if color == :black
   end
 
   def create_coordinate
     case color
     when :white
-      start_row = 6
       start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
+      @position = Coordinate.new(row: 6, col: start_col)
     when :black
-      start_row = 1
       start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
+      @position = Coordinate.new(row: 1, col: start_col)
     end
   end
 
@@ -38,6 +37,35 @@ class Pawn
     position.update_row(row)
     position.update_col(col)
     @moves_made += 1
+  end
+
+  def generate_possible_moves
+    @possible_moves.clear
+    remove_double_moves
+
+    @moves.each do |move|
+      row = position.row + move[0]
+      col = position.col + move[1]
+      @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
+                                        board.square_at(row, col).nil?
+    end
+    add_attacking_moves
+  end
+
+  def remove_double_moves
+    @moves.delete_if { |move| (move[0].abs > 1) && moves_made.positive? }
+  end
+
+  def add_attacking_moves
+    attacking_moves = [[-1, 1], [-1, -1]] if color == :white
+    attacking_moves = [[1, 1], [1, -1]] if color == :black
+
+    attacking_moves.each do |move|
+      row = position.row + move[0]
+      col = position.col + move[1]
+      @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
+                                  board.opponent?(row, col, color)
+    end
   end
 
   def symbol
