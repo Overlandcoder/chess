@@ -8,7 +8,7 @@ class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
               :destination, :piece_to_move
 
-  TYPES = [:rook, :knight, :bishop, :queen, :king]
+  TYPES = [:rook, :knight, :bishop, :queen, :king, :pawn]
 
   def initialize
     @board = Board.new
@@ -148,17 +148,13 @@ class Game
     choose_destination
   end
 
-  def move_castling_rook
-
-  end
-
   def remove_check_moves
     current_row = piece_to_move.position.row
     current_col = piece_to_move.position.col
     moves_to_delete = []
-    
+
     piece_to_move.possible_moves.each do |move|
-      @board_copy = Marshal.load(Marshal.dump(board))
+    @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move)
       moves_to_delete << move if king_in_check? && piece_to_move.title != 'King'
       remove_king_checks
@@ -188,8 +184,12 @@ class Game
         next if piece.nil?
 
         if piece.color == opponent.color
-          piece.generate_possible_moves
-          possible_moves << piece.possible_moves
+          if piece.is_a?(Pawn)
+            possible_moves << piece.attacking_moves_only
+          else
+            piece.generate_possible_moves
+            possible_moves << piece.possible_moves
+          end
         end
       end
     end
