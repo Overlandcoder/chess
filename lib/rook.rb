@@ -2,7 +2,10 @@ require 'pry-byebug'
 require_relative 'board'
 
 class Rook
-  attr_reader :color, :number, :position, :destination, :board, :possible_moves
+  attr_reader :color, :number, :position, :destination, :board, :possible_moves,
+              :title, :moves_made
+
+  attr_accessor :possible_moves
 
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
@@ -12,6 +15,8 @@ class Rook
     @board = board
     create_coordinate
     @possible_moves = []
+    @title = 'Rook'
+    @moves_made = 0
   end
 
   def create_coordinate
@@ -26,9 +31,7 @@ class Rook
   end
 
   def valid_move?
-    @possible_moves.any? do |move|
-      move[0] == destination.row && move[1] == destination.col
-    end
+    @possible_moves.include?([destination.row, destination.col])
   end
 
   def set_destination(coordinate)
@@ -38,6 +41,7 @@ class Rook
   def update_position(row = destination.row, col = destination.col)
     position.update_row(row)
     position.update_col(col)
+    @moves_made += 1
   end
 
   def generate_possible_moves
@@ -50,7 +54,7 @@ class Rook
         row += move[0]
         col += move[1]
         break unless row.between?(0, 7) && col.between?(0, 7) &&
-                                          board.nil_or_opponent?(row, col, self.color)
+                                          board.nil_or_opponent?(row, col, color)
                                           @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
