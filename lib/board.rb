@@ -113,6 +113,10 @@ class Board
     square_at(row, col).color != current_piece_color
   end
 
+  def opponent?(row, col, current_piece_color)
+    square_at(row, col) && square_at(row, col).color != current_piece_color
+  end
+
   private
 
   def create_grid
