@@ -41,19 +41,30 @@ class Pawn
 
   def generate_possible_moves
     @possible_moves.clear
-    remove_double_moves
+    remove_double_moves_if_moves_made
+    remove_double_moves_if_path_blocked
 
     @moves.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
-      @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
-                                        board.square_at(row, col).nil?
+      next unless row.between?(0, 7) && col.between?(0, 7)
+
+      @possible_moves << [row, col] if board.square_at(row, col).nil?
     end
     attacking_moves.each { |move| @possible_moves << move }
   end
 
-  def remove_double_moves
+  def remove_double_moves_if_moves_made
     @moves.delete_if { |move| (move[0].abs > 1) && moves_made.positive? }
+  end
+  
+  def remove_double_moves_if_path_blocked
+    @moves.delete_if do |move|
+      first_square_row = position.row - 1 if color == :white
+      first_square_row = position.row + 1 if color == :black
+      
+      !board.square_at(first_square_row, position.col).nil?
+    end
   end
 
   def attacking_moves(removing_king_checks = false)
