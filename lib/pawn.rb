@@ -18,7 +18,7 @@ class Pawn
     case color
     when :white
       start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
-      @position = Coordinate.new(row: 6, col: start_col)
+      @position = Coordinate.new(row: 2, col: start_col)
     when :black
       start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
       @position = Coordinate.new(row: 1, col: start_col)
@@ -59,15 +59,16 @@ class Pawn
   def attacking_moves(removing_king_checks = false)
     pawn_attack_moves = [[-1, 1], [-1, -1]] if color == :white
     pawn_attack_moves = [[1, 1], [1, -1]] if color == :black
-    possible_attack_moves = []
+    moves = []
 
     pawn_attack_moves.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
-      possible_attack_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
-                                  opponent?(removing_king_checks, row, col)
+      moves << [row, col] if row.between?(0, 7) &&
+                              col.between?(0, 7) &&
+                              opponent?(removing_king_checks, row, col)
     end
-    possible_attack_moves
+    moves
   end
 
   def attacking_moves_only
@@ -79,6 +80,11 @@ class Pawn
     return true if removing_king_checks
 
     board.opponent?(row, col, color)
+  end
+
+  def can_be_promoted?
+    (position.row == 0 && color == :white) ||
+    (position.row == 7 && color == :black)
   end
 
   def symbol
