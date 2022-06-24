@@ -29,10 +29,10 @@ class Game
   end
 
   def pieces(color, player)
-    TYPES.each { |type| create_piece(type, color, player, board) }
+    TYPES.each { |type| create_piece(type, color, board) }
   end
 
-  def create_piece(type, color, player, board, num = 1)
+  def create_piece(type, color, board, num = 1)
     num = 7 if type == :pawn
     num = 0 if type == :king || type == :queen
 
@@ -61,14 +61,15 @@ class Game
       board.highlight_piece(piece_to_move.position.row, piece_to_move.position.col)
       piece_to_move.generate_possible_moves
       remove_check_moves
-      add_castling_moves if piece_to_move.title == 'King'
+      add_castling_moves if piece_to_move.is_a?(King)
       board.highlight_possible_moves(piece_to_move.possible_moves)
-      break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
       @destination = choose_destination
       castling?
       make_move
+      promote_pawn if piece_to_move.is_a?(Pawn) && piece_to_move.can_be_promoted?
       @current_player = opponent
     end
+    # break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
   end
 
   def reselect
@@ -89,12 +90,22 @@ class Game
     clear_old_position
   end
 
+  def promote_pawn
+    puts 'Time to promote this pawn! Enter one of the following piece names...'
+    puts 'queen, rook, bishop or knight:'
+    piece_type = gets.chomp.to_sym
+    create_piece(piece_type, current_player.color, board)
+    new_piece = board.white_pieces[-1] if current_player.color == :white
+    new_piece = board.black_pieces[-1] if current_player.color == :black
+    board.update(piece_to_move.position.row, piece_to_move.position.col, new_piece)
+  end
+
   def king
     case current_player.color
     when :white
-      board.white_pieces.find { |piece| piece.title == 'King'}
+      board.white_pieces.find { |piece| piece.is_a?(King)}
     when :black
-      board.black_pieces.find { |piece| piece.title == 'King'}
+      board.black_pieces.find { |piece| piece.is_a?(King)}
     end
   end
 
@@ -139,7 +150,6 @@ class Game
     row, col = coordinates(user_input)
     destination_coordinates = Coordinate.new(row: row, col: col)
     piece_to_move.set_destination(destination_coordinates)
-    move_castling_rook if (col == 2 || col == 6) && (kingside_castle || queenside_castle)
 
     return destination_coordinates if piece_to_move.valid_move? &&
                                       nil_or_opponent?(row, col)
@@ -156,7 +166,7 @@ class Game
     piece_to_move.possible_moves.each do |move|
     @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move)
-      moves_to_delete << move if king_in_check? && piece_to_move.title != 'King'
+      moves_to_delete << move if king_in_check? && !piece_to_move.is_a?(King)
       remove_king_checks
     end
 
@@ -200,14 +210,14 @@ class Game
     piece = board.square_at(@castling_row, 7)
     return nil if piece.nil?
 
-    piece if piece.title == 'Rook'
+    piece if piece.is_a?(Rook)
   end
 
   def l_rook
     piece = board.square_at(@castling_row, 0)
     return nil if piece.nil?
 
-    piece if piece.title == 'Rook'
+    piece if piece.is_a?(Rook)
   end
 
   def add_castling_moves
