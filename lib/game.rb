@@ -192,14 +192,13 @@ class Game
       (0..7).each do |col|
         piece = @board_copy.square_at(row, col)
         next if piece.nil?
+        next unless piece.color == opponent.color
 
-        if piece.color == opponent.color
-          if piece.is_a?(Pawn)
-            possible_moves << piece.attacking_moves_only
-          else
-            piece.generate_possible_moves
-            possible_moves << piece.possible_moves
-          end
+        if piece.is_a?(Pawn)
+          possible_moves << piece.attacking_moves_only
+        else
+          piece.generate_possible_moves
+          possible_moves << piece.possible_moves
         end
       end
     end
