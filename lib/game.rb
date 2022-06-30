@@ -52,9 +52,6 @@ class Game
   end
 
   def play_round
-    @castling_row = 7 if current_player.color == :white
-    @castling_row = 0 if current_player.color == :black
-
     loop do
       board.display
       piece_selection
@@ -62,9 +59,11 @@ class Game
       piece_to_move.generate_possible_moves
       remove_check_moves
       add_castling_moves if piece_to_move.is_a?(King)
+      add_en_passant_moves
       board.highlight_possible_moves(piece_to_move.possible_moves)
       @destination = choose_destination
       castling?
+      en_passant_capture
       make_move
       promote_pawn if piece_to_move.is_a?(Pawn) && piece_to_move.can_be_promoted?
       @current_player = opponent
@@ -88,6 +87,7 @@ class Game
     update_board
     update_piece_position
     clear_old_position
+    # current_player.moved_pawn_last = true if piece_to_move.is_a?(Pawn)
   end
 
   def promote_pawn
@@ -116,7 +116,7 @@ class Game
 
   def remove_opponent_piece
     return if board.square_at(destination.row, destination.col).nil?
-
+    
     piece_to_remove = board.square_at(destination.row, destination.col)
     board.remove_piece(piece_to_remove)
   end
@@ -195,7 +195,7 @@ class Game
         next unless piece.color == opponent.color
 
         if piece.is_a?(Pawn)
-          possible_moves << piece.attacking_moves_only
+          possible_moves << piece.capturing_moves_only
         else
           piece.generate_possible_moves
           possible_moves << piece.possible_moves
@@ -221,6 +221,9 @@ class Game
 
   def add_castling_moves
     return if king_in_check? || !king.moves_made.zero?
+
+    @castling_row = 7 if current_player.color == :white
+    @castling_row = 0 if current_player.color == :black
 
     king.possible_moves << [@castling_row, 6] if kingside_castle
     king.possible_moves << [@castling_row, 2] if queenside_castle
@@ -254,6 +257,19 @@ class Game
     (board.square_at(@castling_row, 3).nil? && board.square_at(@castling_row, 2).nil? &&
     board.square_at(@castling_row, 1).nil?) && (!king_in_check?(@castling_row, 3) &&
     !king_in_check?(@castling_row, 2) && !king_in_check?(@castling_row, 1))
+  end
+
+  def add_en_passant_moves
+    return unless piece_to_move.is_a?(Pawn) # && opponent.moved_pawn_last
+
+    piece_to_move.add_en_passant_moves
+  end
+
+  def en_passant_capture
+    return unless piece_to_move.is_a?(Pawn) && piece_to_move.capturing_en_passant
+    return if destination.col == position.col
+
+    piece_to_move.capturing_en_passant = true
   end
 
   def coordinates(input)
