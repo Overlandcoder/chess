@@ -6,7 +6,7 @@ require 'pry-byebug'
 
 class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
-              :destination, :piece_to_move
+              :destination, :chosen_piece
 
   TYPES = [:rook, :knight, :bishop, :queen, :king, :pawn]
 
@@ -55,39 +55,40 @@ class Game
     loop do
       board.display
       piece_selection
-      board.highlight_piece(piece_to_move.position.row, piece_to_move.position.col)
-      piece_to_move.generate_possible_moves
+      board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
+      chosen_piece.generate_possible_moves
       remove_check_moves
-      add_castling_moves if piece_to_move.is_a?(King)
+      add_castling_moves if chosen_piece.is_a?(King)
       add_en_passant_moves
-      board.highlight_possible_moves(piece_to_move.possible_moves)
+      board.highlight_possible_moves(chosen_piece.possible_moves)
       @destination = choose_destination
       castling?
       en_passant_capture
       make_move
-      promote_pawn if piece_to_move.is_a?(Pawn) && piece_to_move.can_be_promoted?
+      promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
       @current_player = opponent
     end
-    # break if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
+    # break if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
   end
 
   def reselect
     board.display
     piece_selection
-    board.highlight_piece(piece_to_move.position.row, piece_to_move.position.col)
-    piece_to_move.generate_possible_moves
+    board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
+    chosen_piece.generate_possible_moves
     remove_check_moves
-    board.highlight_possible_moves(piece_to_move.possible_moves)
-    return if piece_to_move.respond_to?(:checkmate?) && piece_to_move.checkmate?
+    board.highlight_possible_moves(chosen_piece.possible_moves)
+    return if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
     @destination = choose_destination
   end
 
   def make_move
+    chosen_piece.moved_last = false if chosen_piece.moved_last == true
     remove_opponent_piece
     update_board
     update_piece_position
     clear_old_position
-    # current_player.moved_pawn_last = true if piece_to_move.is_a?(Pawn)
+    chosen_piece.moved_last = true if chosen_piece.is_a?(Pawn)
   end
 
   def promote_pawn
@@ -97,7 +98,7 @@ class Game
     create_piece(piece_type, current_player.color, board)
     new_piece = board.white_pieces[-1] if current_player.color == :white
     new_piece = board.black_pieces[-1] if current_player.color == :black
-    board.update(piece_to_move.position.row, piece_to_move.position.col, new_piece)
+    board.update(chosen_piece.position.row, chosen_piece.position.col, new_piece)
   end
 
   def king
@@ -111,7 +112,7 @@ class Game
 
   def piece_selection
     @piece_position = choose_piece
-    @piece_to_move = board.square_at(piece_position.row, piece_position.col)
+    @chosen_piece = board.square_at(piece_position.row, piece_position.col)
   end
 
   def remove_opponent_piece
@@ -149,9 +150,9 @@ class Game
 
     row, col = coordinates(user_input)
     destination_coordinates = Coordinate.new(row: row, col: col)
-    piece_to_move.set_destination(destination_coordinates)
+    chosen_piece.set_destination(destination_coordinates)
 
-    return destination_coordinates if piece_to_move.valid_move? &&
+    return destination_coordinates if chosen_piece.valid_move? &&
                                       nil_or_opponent?(row, col)
 
     puts 'Invalid move, please choose another square:'
@@ -159,23 +160,23 @@ class Game
   end
 
   def remove_check_moves
-    current_row = piece_to_move.position.row
-    current_col = piece_to_move.position.col
+    current_row = chosen_piece.position.row
+    current_col = chosen_piece.position.col
     moves_to_delete = []
 
-    piece_to_move.possible_moves.each do |move|
+    chosen_piece.possible_moves.each do |move|
     @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move)
-      moves_to_delete << move if king_in_check? && !piece_to_move.is_a?(King)
+      moves_to_delete << move if king_in_check? && !chosen_piece.is_a?(King)
       remove_king_checks
     end
 
-    moves_to_delete.each { |move| piece_to_move.possible_moves.delete(move) }
+    moves_to_delete.each { |move| chosen_piece.possible_moves.delete(move) }
   end
 
   def simulate_move(row, col, move)
     @board_copy.update(row, col, nil)
-    @board_copy.update(move[0], move[1], piece_to_move)
+    @board_copy.update(move[0], move[1], chosen_piece)
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
@@ -231,7 +232,7 @@ class Game
 
   def castling?
     king.castling = false
-    return false unless piece_to_move == king
+    return false unless chosen_piece == king
 
     if (kingside_castle && king.destination.row == @castling_row &&
       king.destination.col == 6)
@@ -260,16 +261,28 @@ class Game
   end
 
   def add_en_passant_moves
-    return unless piece_to_move.is_a?(Pawn) # && opponent.moved_pawn_last
+    return unless chosen_piece.is_a?(Pawn)
 
-    piece_to_move.add_en_passant_moves
+    chosen_piece.add_en_passant_moves
   end
 
   def en_passant_capture
-    return unless piece_to_move.is_a?(Pawn) && piece_to_move.capturing_en_passant
-    return if destination.col == position.col
+    return unless chosen_piece.is_a?(Pawn)
+    return if destination.col == chosen_piece.position.col
 
-    piece_to_move.capturing_en_passant = true
+    if opponent.color == :white
+      piece_to_remove = board.white_pieces.find do |piece|
+        piece.is_a?(Pawn) && piece.moved_last
+      end
+      board.remove_piece(piece_to_remove)
+      board.update_board(piece_to_remove.position.row, piece_to_remove.position.col, nil)
+    elsif opponent.color == :black
+      piece_to_remove = board.black_pieces.find do |piece|
+        piece.is_a?(Pawn) && piece.moved_last
+      end
+      board.remove_piece(piece_to_remove)
+      board.update(piece_to_remove.position.row, piece_to_remove.position.col, nil)
+    end
   end
 
   def coordinates(input)
@@ -293,13 +306,13 @@ class Game
   def update_board
     board.update(@castling_row, 5, r_rook) if king.castling && @castling_kingside
     board.update(@castling_row, 3, l_rook) if king.castling && @castling_queenside
-    board.update(destination.row, destination.col, piece_to_move)
+    board.update(destination.row, destination.col, chosen_piece)
   end
 
   def update_piece_position
     r_rook.update_position(@castling_row, 5) if king.castling && @castling_kingside
     l_rook.update_position(@castling_row, 3) if king.castling && @castling_queenside
-    piece_to_move.update_position
+    chosen_piece.update_position
   end
 
   def intro_message
