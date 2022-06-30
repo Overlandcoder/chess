@@ -3,6 +3,12 @@ require 'pry-byebug'
 class Board
   attr_reader :white_pieces, :black_pieces
 
+  TAN_BG = "\e[48;2;#{181};#{183};#{147}m"
+  GREEN_BG = "\e[48;2;#{84};#{140};#{42}m"
+  ORANGE_BG = "\e[48;2;#{255};#{181};#{87}m"
+  BRIGHT_GREEN_BG = "\e[48;2;#{193};#{255};#{134}m"
+  RESET_CODE = "\u001b[0m"
+
   def initialize
     create_grid
     @white_pieces = []
@@ -40,14 +46,14 @@ class Board
       if idx.even?
         row.each_index do |idx|
           piece = row[idx]
-          row[idx] = grey_bg + " #{piece ? piece.symbol : ' '} " + reset_code if idx.even?
-          row[idx] = green_bg + " #{piece ? piece.symbol : ' '} " + reset_code if idx.odd?
+          row[idx] = TAN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.even?
+          row[idx] = GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.odd?
         end
       else
         row.each_index do |idx|
           piece = row[idx]
-          row[idx] = grey_bg + " #{piece ? piece.symbol : ' '} " + reset_code if idx.odd?
-          row[idx] = green_bg + " #{piece ? piece.symbol : ' '} " + reset_code if idx.even?
+          row[idx] = TAN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.odd?
+          row[idx] = GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.even?
         end
       end
     end
@@ -55,7 +61,7 @@ class Board
 
   def highlight_piece(row, col)
     piece = @grid[row][col]
-    @grid_clone[row][col] = orange_bg + " #{piece.symbol} " + reset_code
+    @grid_clone[row][col] = ORANGE_BG + " #{piece.symbol} " + RESET_CODE
   end
 
   def highlight_possible_moves(positions)
@@ -63,29 +69,9 @@ class Board
       row = position[0]
       col = position[1]
       piece = @grid[row][col]
-      @grid_clone[row][col] = bright_green_bg + " #{piece ? piece.symbol : ' '} " + reset_code
+      @grid_clone[row][col] = BRIGHT_GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE
     end
     display(true)
-  end
-
-  def grey_bg
-    "\e[48;2;#{181};#{183};#{147}m"
-  end
-
-  def green_bg
-    "\e[48;2;#{84};#{140};#{42}m"
-  end
-
-  def orange_bg
-    "\e[48;2;#{255};#{181};#{87}m"
-  end
-
-  def bright_green_bg
-    "\e[48;2;#{193};#{255};#{134}m"
-  end
-
-  def reset_code
-    "\u001b[0m"
   end
 
   def attach_pieces(pieces)
