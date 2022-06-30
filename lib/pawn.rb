@@ -54,7 +54,7 @@ class Pawn
 
       @possible_moves << [row, col] if board.square_at(row, col).nil?
     end
-    add_capturing_moves
+    capturing_moves.each { |move| @possible_moves << move }
   end
 
   def remove_two_square_moves_if_moves_made
@@ -70,11 +70,11 @@ class Pawn
     end
   end
 
-  def add_capturing_moves(removing_king_checks = false)
+  def capturing_moves(removing_king_checks = false)
     pawn_capture_moves = [[-1, 1], [-1, -1]] if color == :white
     pawn_capture_moves = [[1, 1], [1, -1]] if color == :black
     moves = []
-
+    
     pawn_capture_moves.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
@@ -87,7 +87,7 @@ class Pawn
 
   def capturing_moves_only
     @possible_moves.clear
-    add_capturing_moves(true)
+    capturing_moves(true)
   end
 
   def add_en_passant_moves
