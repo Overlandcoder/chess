@@ -2,7 +2,7 @@ class Pawn
   attr_reader :color, :number, :position, :destination, :board, :title,
               :possible_moves, :moves_made, :moved_two_squares
 
-  attr_accessor :capturing_en_passant
+  attr_accessor :capturing_en_passant, :moved_last
 
   def initialize(color, number, board)
     @color = color
@@ -14,6 +14,7 @@ class Pawn
     @moves_made = 0
     @moves = [[-1, 0], [-2, 0]] if color == :white
     @moves = [[1, 0], [2, 0]] if color == :black
+    @moved_last = false
   end
 
   def create_coordinate
@@ -74,7 +75,7 @@ class Pawn
     pawn_capture_moves = [[-1, 1], [-1, -1]] if color == :white
     pawn_capture_moves = [[1, 1], [1, -1]] if color == :black
     moves = []
-    
+
     pawn_capture_moves.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
@@ -91,14 +92,16 @@ class Pawn
   end
 
   def add_en_passant_moves
-    left_piece = board.square_at(position.row, position.col - 1)
-    right_piece = board.square_at(position.row, position.col + 1)
+    l_piece = board.square_at(position.row, position.col - 1)
+    r_piece = board.square_at(position.row, position.col + 1)
     next_row = position.row + 1 if color == :black
     next_row = position.row - 1 if color == :white
 
-    if left_piece && left_piece.moved_two_squares
+    if l_piece && l_piece.moved_two_squares &&
+         l_piece.moved_last && l_piece.moves_made == 1
       @possible_moves << [next_row, position.col - 1]
-    elsif right_piece && right_piece.moved_two_squares
+    elsif r_piece && r_piece.moved_two_squares &&
+            r_piece.moved_last && r_piece.moves_made == 1
       @possible_moves << [next_row, position.col + 1]
     end
   end
