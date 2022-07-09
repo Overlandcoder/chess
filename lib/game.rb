@@ -59,13 +59,12 @@ class Game
       chosen_piece.generate_possible_moves
       remove_check_moves
       add_castling_moves if chosen_piece.is_a?(King)
-      add_en_passant_moves
       board.highlight_possible_moves(chosen_piece.possible_moves)
       @destination = choose_destination
       castling?
       en_passant_capture
       make_move
-      promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
+      # promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
       @current_player = opponent
     end
     # break if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
@@ -83,12 +82,12 @@ class Game
   end
 
   def make_move
-    chosen_piece.moved_last = false if chosen_piece.moved_last == true
+    # chosen_piece.moved_last = false if chosen_piece.moved_last == true
     remove_opponent_piece
     update_board
     update_piece_position
     clear_old_position
-    chosen_piece.moved_last = true if chosen_piece.is_a?(Pawn)
+    # chosen_piece.moved_last = true if chosen_piece.is_a?(Pawn)
   end
 
   def promote_pawn
@@ -117,7 +116,7 @@ class Game
 
   def remove_opponent_piece
     return if board.square_at(destination.row, destination.col).nil?
-    
+
     piece_to_remove = board.square_at(destination.row, destination.col)
     board.remove_piece(piece_to_remove)
   end
@@ -260,15 +259,15 @@ class Game
     !king_in_check?(@castling_row, 2) && !king_in_check?(@castling_row, 1))
   end
 
-  def add_en_passant_moves
-    return unless chosen_piece.is_a?(Pawn)
-
-    chosen_piece.add_en_passant_moves
-  end
-
   def en_passant_capture
     return unless chosen_piece.is_a?(Pawn)
     return if destination.col == chosen_piece.position.col
+
+    piece_to_remove = board.pieces(opponent.color).find do |piece|
+      piece.is_a?(Pawn) && piece.moved_last
+    end
+
+
 
     if opponent.color == :white
       piece_to_remove = board.white_pieces.find do |piece|
