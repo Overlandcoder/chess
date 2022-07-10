@@ -56,6 +56,7 @@ class Pawn
       @possible_moves << [row, col] if board.square_at(row, col).nil?
     end
     capturing_moves.each { |move| @possible_moves << move }
+    add_en_passant_moves
   end
 
   def remove_two_square_moves_if_moves_made
@@ -92,18 +93,26 @@ class Pawn
   end
 
   def add_en_passant_moves
-    l_piece = board.square_at(position.row, position.col - 1)
-    r_piece = board.square_at(position.row, position.col + 1)
     next_row = position.row + 1 if color == :black
     next_row = position.row - 1 if color == :white
+    left_en_passant_capture(next_row)
+    right_en_passant_capture(next_row)
+  end
 
-    if l_piece && l_piece.moved_two_squares &&
-         l_piece.moved_last && l_piece.moves_made == 1
-      @possible_moves << [next_row, position.col - 1]
-    elsif r_piece && r_piece.moved_two_squares &&
-            r_piece.moved_last && r_piece.moves_made == 1
-      @possible_moves << [next_row, position.col + 1]
-    end
+  def left_en_passant_capture
+    l_piece = board.square_at(position.row, position.col - 1)
+    return unless l_piece.is_a?(Pawn)
+    return unless l_piece.moved_two_squares && l_piece.moves_made == 1
+
+    @possible_moves << [next_row, position.col - 1]
+  end
+
+  def right_en_passant_capture
+    r_piece = board.square_at(position.row, position.col + 1)
+    return unless r_piece.is_a?(Pawn)
+    return unless r_piece.moved_two_squares && r_piece.moves_made == 1
+
+    @possible_moves << [next_row, position.col + 1]
   end
 
   def opponent?(removing_king_checks = false, row, col)
@@ -113,16 +122,12 @@ class Pawn
   end
 
   def can_be_promoted?
-    (position.row == 0 && color == :white) ||
-    (position.row == 7 && color == :black)
+    (position.row.zero? && color == :white) ||
+      (position.row == 7 && color == :black)
   end
 
   def two_square_move?
-    if (position.row - destination.row).abs == 2
-      @moved_two_squares = true
-    else
-      @moved_two_squares = false
-    end
+    @moved_two_squares = (position.row - destination.row).abs == 2
   end
 
   def symbol
