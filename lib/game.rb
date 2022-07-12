@@ -261,15 +261,6 @@ class Game
     !king_in_check?(@castling_row, 2) && !king_in_check?(@castling_row, 1))
   end
 
-  def piece_to_remove
-    board.pieces(opponent.color).find do |piece|
-      next unless piece.is_a?(Pawn)
-      next unless piece.moved_last
-
-      piece
-    end
-  end
-
   def en_passant_capture
     return unless chosen_piece.is_a?(Pawn)
     return if destination.col == chosen_piece.position.col
