@@ -87,7 +87,9 @@ class Game
     update_board
     update_piece_position
     clear_old_position
-    # chosen_piece.moved_last = true if chosen_piece.is_a?(Pawn)
+    if chosen_piece.is_a?(Pawn)
+      chosen_piece.moved_last = true
+    end
   end
 
   def promote_pawn
@@ -259,29 +261,26 @@ class Game
     !king_in_check?(@castling_row, 2) && !king_in_check?(@castling_row, 1))
   end
 
+  def piece_to_remove
+    board.pieces(opponent.color).find do |piece|
+      next unless piece.is_a?(Pawn)
+      next unless piece.moved_last
+
+      piece
+    end
+  end
+
   def en_passant_capture
     return unless chosen_piece.is_a?(Pawn)
     return if destination.col == chosen_piece.position.col
+    return unless board.square_at(destination.row, destination.col).nil?
 
-    piece_to_remove = board.pieces(opponent.color).find do |piece|
-      piece.is_a?(Pawn) && piece.moved_last
-    end
+    piece_to_remove = board.square_at(chosen_piece.position.row, chosen_piece.destination.col)
 
+    return unless piece_to_remove.is_a?(Pawn) && piece_to_remove.moved_last
 
-
-    if opponent.color == :white
-      piece_to_remove = board.white_pieces.find do |piece|
-        piece.is_a?(Pawn) && piece.moved_last
-      end
-      board.remove_piece(piece_to_remove)
-      board.update_board(piece_to_remove.position.row, piece_to_remove.position.col, nil)
-    elsif opponent.color == :black
-      piece_to_remove = board.black_pieces.find do |piece|
-        piece.is_a?(Pawn) && piece.moved_last
-      end
-      board.remove_piece(piece_to_remove)
-      board.update(piece_to_remove.position.row, piece_to_remove.position.col, nil)
-    end
+    board.remove_piece(piece_to_remove)
+    board.update(piece_to_remove.position.row, piece_to_remove.position.col, nil)
   end
 
   def coordinates(input)
