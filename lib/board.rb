@@ -3,16 +3,21 @@ require 'pry-byebug'
 class Board
   attr_reader :white_pieces, :black_pieces
 
-  TAN_BG = "\e[48;2;#{181};#{183};#{147}m"
-  GREEN_BG = "\e[48;2;#{84};#{140};#{42}m"
-  ORANGE_BG = "\e[48;2;#{255};#{181};#{87}m"
-  BRIGHT_GREEN_BG = "\e[48;2;#{193};#{255};#{134}m"
-  RESET_CODE = "\u001b[0m"
+  TAN_BG = "\e[48;2;#{181};#{183};#{147}m".freeze
+  GREEN_BG = "\e[48;2;#{84};#{140};#{42}m".freeze
+  ORANGE_BG = "\e[48;2;#{255};#{181};#{87}m".freeze
+  BRIGHT_GREEN_BG = "\e[48;2;#{193};#{255};#{134}m".freeze
+  RESET_CODE = "\u001b[0m".freeze
 
   def initialize
     create_grid
     @white_pieces = []
     @black_pieces = []
+  end
+
+  def pieces(player_color)
+    @white_pieces if player_color == :white
+    @black_pieces if player_color == :black
   end
 
   def add_piece(piece)
@@ -96,7 +101,7 @@ class Board
 
   def nil_or_opponent?(row, col, current_piece_color)
     square_at(row, col).nil? ||
-    square_at(row, col).color != current_piece_color
+      square_at(row, col).color != current_piece_color
   end
 
   def opponent?(row, col, current_piece_color)
