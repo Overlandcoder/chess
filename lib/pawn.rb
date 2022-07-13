@@ -62,12 +62,12 @@ class Pawn
   def remove_two_square_moves_if_moves_made
     @moves.delete_if { |move| (move[0].abs > 1) && moves_made.positive? }
   end
-  
+
   def remove_two_square_moves_if_path_blocked
     @moves.delete_if do |move|
       first_square_row = position.row - 1 if color == :white
       first_square_row = position.row + 1 if color == :black
-      
+
       !board.square_at(first_square_row, position.col).nil?
     end
   end
@@ -82,7 +82,7 @@ class Pawn
       col = position.col + move[1]
       moves << [row, col] if row.between?(0, 7) &&
                               col.between?(0, 7) &&
-                              opponent?(removing_king_checks, row, col)
+                              opponent?(row, col, removing_king_checks)
     end
     moves
   end
@@ -99,23 +99,26 @@ class Pawn
     right_en_passant_capture(next_row)
   end
 
-  def left_en_passant_capture
+  def left_en_passant_capture(next_row)
     l_piece = board.square_at(position.row, position.col - 1)
     return unless l_piece.is_a?(Pawn)
     return unless l_piece.moved_two_squares && l_piece.moves_made == 1
 
-    @possible_moves << [next_row, position.col - 1]
+    next_col = position.col - 1
+    @possible_moves << [next_row, next_col] if next_col.between?(0, 7)
   end
 
-  def right_en_passant_capture
+  def right_en_passant_capture(next_row)
     r_piece = board.square_at(position.row, position.col + 1)
     return unless r_piece.is_a?(Pawn)
     return unless r_piece.moved_two_squares && r_piece.moves_made == 1
 
-    @possible_moves << [next_row, position.col + 1]
+    next_col = position.col + 1
+
+    @possible_moves << [next_row, next_col] if next_col.between?(0, 7)
   end
 
-  def opponent?(removing_king_checks = false, row, col)
+  def opponent?(row, col, removing_king_checks = false)
     return true if removing_king_checks
 
     board.opponent?(row, col, color)
