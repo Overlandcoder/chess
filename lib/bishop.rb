@@ -1,5 +1,7 @@
 class Bishop
-  attr_reader :color, :number, :position, :destination, :board, :possible_moves
+  attr_reader :color, :number, :position, :destination, :board
+
+  attr_accessor :possible_moves
 
   POSSIBLE_MOVES = [[-1, 1], [1, -1], [1, 1], [-1, -1]]
 
@@ -23,9 +25,7 @@ class Bishop
   end
 
   def valid_move?
-    @possible_moves.any? do |move|
-      move[0] == destination.row && move[1] == destination.col
-    end
+    @possible_moves.include?([destination.row, destination.col])
   end
 
   def set_destination(coordinate)
@@ -39,7 +39,7 @@ class Bishop
 
   def generate_possible_moves
     @possible_moves.clear
-    
+
     POSSIBLE_MOVES.each do |move|
       row = position.row
       col = position.col
@@ -47,7 +47,7 @@ class Bishop
         row += move[0]
         col += move[1]
         break unless row.between?(0, 7) && col.between?(0, 7) &&
-                    board.nil_or_opponent?(row, col, self.color)
+                    board.nil_or_opponent?(row, col, color)
                     @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
