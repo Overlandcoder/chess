@@ -64,7 +64,8 @@ class Game
       castling?
       en_passant_capture
       make_move
-      # promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
+    p board.pieces(current_player.color).length
+      promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
       @current_player = opponent
     end
     # break if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
@@ -108,10 +109,10 @@ class Game
     puts 'Time to promote this pawn! Enter one of the following piece names...'
     puts 'queen, rook, bishop or knight:'
     piece_type = gets.chomp.to_sym
-    create_piece(piece_type, current_player.color, board)
-    new_piece = board.white_pieces[-1] if current_player.color == :white
-    new_piece = board.black_pieces[-1] if current_player.color == :black
+    create_piece(piece_type, current_player.color, board, 0)
+    new_piece = board.pieces(current_player.color)[-1]
     board.update(chosen_piece.position.row, chosen_piece.position.col, new_piece)
+    board.remove_piece(chosen_piece)
   end
 
   def king
@@ -284,6 +285,10 @@ class Game
 
     board.remove_piece(piece_to_remove)
     board.update(piece_to_remove.position.row, piece_to_remove.position.col, nil)
+  end
+
+  def checkmate?
+    board.pieces(current_player.color)
   end
 
   def coordinates(input)
