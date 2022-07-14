@@ -102,7 +102,8 @@ class Pawn
   def left_en_passant_capture(next_row)
     l_piece = board.square_at(position.row, position.col - 1)
     return unless l_piece.is_a?(Pawn)
-    return unless l_piece.moved_two_squares && l_piece.moves_made == 1
+    return unless l_piece.moved_two_squares && l_piece.moves_made == 1 &&
+                  l_piece.moved_last
 
     next_col = position.col - 1
     @possible_moves << [next_row, next_col] if next_col.between?(0, 7)
@@ -111,7 +112,8 @@ class Pawn
   def right_en_passant_capture(next_row)
     r_piece = board.square_at(position.row, position.col + 1)
     return unless r_piece.is_a?(Pawn)
-    return unless r_piece.moved_two_squares && r_piece.moves_made == 1
+    return unless r_piece.moved_two_squares && r_piece.moves_made == 1 &&
+                  r_piece.moved_last
 
     next_col = position.col + 1
 
