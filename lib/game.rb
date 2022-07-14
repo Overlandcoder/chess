@@ -82,14 +82,26 @@ class Game
   end
 
   def make_move
-    # chosen_piece.moved_last = false if chosen_piece.moved_last == true
+    reset_last_moved_pawn
     remove_opponent_piece
     update_board
     update_piece_position
     clear_old_position
-    if chosen_piece.is_a?(Pawn)
-      chosen_piece.moved_last = true
-    end
+    last_moved_pawn
+  end
+
+  def last_moved_pawn
+    return unless chosen_piece.is_a?(Pawn)
+
+    chosen_piece.moved_last = true
+    current_player.last_moved_pawn = chosen_piece
+  end
+
+  def reset_last_moved_pawn
+    return unless current_player.last_moved_pawn
+    return unless chosen_piece != current_player.last_moved_pawn
+
+    current_player.last_moved_pawn.moved_last = false
   end
 
   def promote_pawn
