@@ -1,7 +1,9 @@
 require_relative 'board'
 
 class Knight
-  attr_reader :color, :number, :position, :destination, :possible_moves, :board
+  attr_reader :color, :number, :position, :destination, :board
+
+  attr_accessor :possible_moves
 
   POSSIBLE_MOVES = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                     [2, 1], [2, -1], [-2, 1], [-2, -1]]
@@ -47,7 +49,7 @@ class Knight
     (0..7).each do |row|
       (0..7).each do |col|
         @possible_moves << [row, col] if valid_move?(row, col) &&
-                                board.nil_or_opponent?(row, col, self.color)
+                                board.nil_or_opponent?(row, col, color)
       end
     end
   end
