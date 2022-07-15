@@ -52,7 +52,7 @@ class Game
   end
 
   def play_round
-    loop do
+    until checkmate?
       board.display
       piece_selection
       board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
@@ -64,11 +64,11 @@ class Game
       castling?
       en_passant_capture
       make_move
-    p board.pieces(current_player.color).length
       promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
       @current_player = opponent
     end
-    # break if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
+    board.display
+    puts "Checkmate. #{opponent.color.capitalize} wins!" if checkmate?
   end
 
   def reselect
@@ -173,24 +173,24 @@ class Game
     choose_destination
   end
 
-  def remove_check_moves
-    current_row = chosen_piece.position.row
-    current_col = chosen_piece.position.col
+  def remove_check_moves(piece = chosen_piece)
+    current_row = piece.position.row
+    current_col = piece.position.col
     moves_to_delete = []
 
-    chosen_piece.possible_moves.each do |move|
+    piece.possible_moves.each do |move|
     @board_copy = Marshal.load(Marshal.dump(board))
-      simulate_move(current_row, current_col, move)
-      moves_to_delete << move if king_in_check? && !chosen_piece.is_a?(King)
+      simulate_move(current_row, current_col, move, piece)
+      moves_to_delete << move if king_in_check? && !piece.is_a?(King)
       remove_king_checks
     end
 
-    moves_to_delete.each { |move| chosen_piece.possible_moves.delete(move) }
+    moves_to_delete.each { |move| piece.possible_moves.delete(move) }
   end
 
-  def simulate_move(row, col, move)
+  def simulate_move(row, col, move, piece)
     @board_copy.update(row, col, nil)
-    @board_copy.update(move[0], move[1], chosen_piece)
+    @board_copy.update(move[0], move[1], piece)
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
@@ -288,7 +288,11 @@ class Game
   end
 
   def checkmate?
-    board.pieces(current_player.color)
+    board.pieces(current_player.color).all? do |piece|
+      piece.generate_possible_moves
+      remove_check_moves(piece)
+      piece.possible_moves.length.zero?
+    end
   end
 
   def coordinates(input)
