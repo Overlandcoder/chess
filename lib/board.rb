@@ -16,8 +16,8 @@ class Board
   end
 
   def pieces(player_color)
-    @white_pieces if player_color == :white
-    @black_pieces if player_color == :black
+    return @white_pieces if player_color == :white
+    return @black_pieces if player_color == :black
   end
 
   def add_piece(piece)
