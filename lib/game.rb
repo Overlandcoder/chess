@@ -138,8 +138,8 @@ class Game
 
   def clear_old_position
     board.update(piece_position.row, piece_position.col, nil)
-    board.update(@castling_row, 7, nil) if king.castling && @castling_kingside
-    board.update(@castling_row, 0, nil) if king.castling && @castling_queenside
+    board.update(@castling_row, 7, nil) if king.is_castling && @castling_kingside
+    board.update(@castling_row, 0, nil) if king.is_castling && @castling_queenside
   end
 
   def opponent
@@ -245,17 +245,17 @@ class Game
   end
 
   def castling?
-    king.castling = false
+    king.is_castling = false
     return false unless chosen_piece == king
 
     if (kingside_castle && king.destination.row == @castling_row &&
       king.destination.col == 6)
       @castling_kingside = true
-      king.castling = true
+      king.is_castling = true
     elsif (queenside_castle && king.destination.row == @castling_row &&
       king.destination.col == 2)
       @castling_queenside = true
-      king.castling = true
+      king.is_castling = true
     end
   end
 
@@ -310,14 +310,14 @@ class Game
   end
 
   def update_board
-    board.update(@castling_row, 5, r_rook) if king.castling && @castling_kingside
-    board.update(@castling_row, 3, l_rook) if king.castling && @castling_queenside
+    board.update(@castling_row, 5, r_rook) if king.is_castling && @castling_kingside
+    board.update(@castling_row, 3, l_rook) if king.is_castling && @castling_queenside
     board.update(destination.row, destination.col, chosen_piece)
   end
 
   def update_piece_position
-    r_rook.update_position(@castling_row, 5) if king.castling && @castling_kingside
-    l_rook.update_position(@castling_row, 3) if king.castling && @castling_queenside
+    r_rook.update_position(@castling_row, 5) if king.is_castling && @castling_kingside
+    l_rook.update_position(@castling_row, 3) if king.is_castling && @castling_queenside
     chosen_piece.update_position
   end
 
