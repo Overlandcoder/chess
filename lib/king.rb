@@ -1,8 +1,7 @@
 class King
-  attr_reader :color, :number, :position, :destination, :possible_moves,
-              :board, :title, :moves_made
+  attr_reader :color, :number, :position, :destination, :board, :moves_made
 
-  attr_accessor :possible_moves
+  attr_accessor :possible_moves, :is_castling
 
   POSSIBLE_MOVES = [[-1, -1], [0, -1], [1, -1], [1, 0],
                     [1, 1], [0, 1], [-1, 1], [-1, 0]]
@@ -13,12 +12,7 @@ class King
     @board = board
     create_coordinate
     @possible_moves = []
-    @title = 'King'
     @moves_made = 0
-  end
-
-  def update_board(board)
-    @board = board
   end
 
   def create_coordinate
