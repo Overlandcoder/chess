@@ -45,28 +45,27 @@ class Game
   def play_game
     setup
     @current_player = player1
-
-    # this 'until' condition will be changed later
-    play_round
-    # conclusion
+    play_round until checkmate?
+    conclusion
   end
 
   def play_round
-    until checkmate?
-      board.display
-      piece_selection
-      board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
-      chosen_piece.generate_possible_moves
-      remove_check_moves
-      add_castling_moves if chosen_piece.is_a?(King)
-      board.highlight_possible_moves(chosen_piece.possible_moves)
-      @destination = choose_destination
-      castling?
-      en_passant_capture
-      make_move
-      promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
-      @current_player = opponent
-    end
+    board.display
+    piece_selection
+    board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
+    chosen_piece.generate_possible_moves
+    remove_check_moves
+    add_castling_moves if chosen_piece.is_a?(King)
+    board.highlight_possible_moves(chosen_piece.possible_moves)
+    @destination = choose_destination
+    castling?
+    en_passant_capture
+    make_move
+    promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
+    @current_player = opponent
+  end
+
+  def conclusion
     board.display
     puts "Checkmate. #{opponent.color.capitalize} wins!" if checkmate?
   end
@@ -288,11 +287,19 @@ class Game
   end
 
   def checkmate?
+    no_moves_left? && king_in_check?
+  end
+
+  def no_moves_left?
     board.pieces(current_player.color).all? do |piece|
       piece.generate_possible_moves
       remove_check_moves(piece)
       piece.possible_moves.length.zero?
     end
+  end
+
+  def stalemate?
+    no_moves_left? && !king_in_check?
   end
 
   def coordinates(input)
