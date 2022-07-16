@@ -15,6 +15,10 @@ class King
     @moves_made = 0
   end
 
+  def to_s
+    color == :white ? "\u001b[37;1m\u265A" : "\u001b[30m\U265A"
+  end
+
   def create_coordinate
     case color
     when :white
@@ -48,14 +52,6 @@ class King
       col = position.col + move[1]
       @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
                                 board.nil_or_opponent?(row, col, color)
-    end
-  end
-
-  def symbol
-    if color == :white
-      "\u001b[37;1m♚"
-    elsif color == :black
-      "\u001b[30m♚"
     end
   end
 end
