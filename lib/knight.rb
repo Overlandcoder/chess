@@ -16,6 +16,10 @@ class Knight
     @possible_moves = []
   end
 
+  def to_s
+    color == :white ? "♞" : "\u001b[30m♞"
+  end
+
   def create_coordinate
     case color
     when :white
@@ -51,14 +55,6 @@ class Knight
         @possible_moves << [row, col] if valid_move?(row, col) &&
                                 board.nil_or_opponent?(row, col, color)
       end
-    end
-  end
-
-  def symbol
-    if color == :white
-      "♞"
-    elsif color == :black
-      "\u001b[30m♞"
     end
   end
 end
