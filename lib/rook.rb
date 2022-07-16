@@ -19,6 +19,10 @@ class Rook
     @moves_made = 0
   end
 
+  def to_s
+    color == :white ? "\u001b[37;1m\u265C" : "\u001b[30m\u265C"
+  end
+
   def create_coordinate
     case color
     when :white
@@ -58,15 +62,6 @@ class Rook
                                           @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
-    end
-  end
-
-  def symbol
-    case color
-    when :white
-      "♜"
-    when :black
-      "\u001b[30m♜"
     end
   end
 end
