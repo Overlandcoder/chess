@@ -1,6 +1,6 @@
 class Pawn
-  attr_reader :color, :number, :position, :destination, :board, :title,
-              :possible_moves, :moves_made, :moved_two_squares
+  attr_reader :color, :number, :position, :destination, :board, :possible_moves,
+              :moves_made, :moved_two_squares
 
   attr_accessor :capturing_en_passant, :moved_last
 
@@ -10,11 +10,14 @@ class Pawn
     @board = board
     create_coordinate
     @possible_moves = []
-    @title = 'Pawn'
     @moves_made = 0
     @moves = [[-1, 0], [-2, 0]] if color == :white
     @moves = [[1, 0], [2, 0]] if color == :black
     @moved_last = false
+  end
+
+  def to_s
+    color == :white ? "\u001b[37;1m\u265F" : "\u001b[30m\u265F"
   end
 
   def create_coordinate
@@ -116,7 +119,6 @@ class Pawn
                   r_piece.moved_last
 
     next_col = position.col + 1
-
     @possible_moves << [next_row, next_col] if next_col.between?(0, 7)
   end
 
@@ -133,13 +135,5 @@ class Pawn
 
   def two_square_move?
     @moved_two_squares = (position.row - destination.row).abs == 2
-  end
-
-  def symbol
-    if color == :white
-      "♟"
-    elsif color == :black
-      "\u001b[30m\u265F"
-    end
   end
 end
