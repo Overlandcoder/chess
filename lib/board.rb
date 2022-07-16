@@ -51,14 +51,14 @@ class Board
       if idx.even?
         row.each_index do |idx|
           piece = row[idx]
-          row[idx] = TAN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.even?
-          row[idx] = GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.odd?
+          row[idx] = TAN_BG + " #{piece ? piece : ' '} " + RESET_CODE if idx.even?
+          row[idx] = GREEN_BG + " #{piece ? piece : ' '} " + RESET_CODE if idx.odd?
         end
       else
         row.each_index do |idx|
           piece = row[idx]
-          row[idx] = TAN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.odd?
-          row[idx] = GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE if idx.even?
+          row[idx] = TAN_BG + " #{piece ? piece : ' '} " + RESET_CODE if idx.odd?
+          row[idx] = GREEN_BG + " #{piece ? piece : ' '} " + RESET_CODE if idx.even?
         end
       end
     end
@@ -66,7 +66,7 @@ class Board
 
   def highlight_piece(row, col)
     piece = @grid[row][col]
-    @grid_clone[row][col] = ORANGE_BG + " #{piece.symbol} " + RESET_CODE
+    @grid_clone[row][col] = ORANGE_BG + " #{piece} " + RESET_CODE
   end
 
   def highlight_possible_moves(positions)
@@ -74,7 +74,7 @@ class Board
       row = position[0]
       col = position[1]
       piece = @grid[row][col]
-      @grid_clone[row][col] = BRIGHT_GREEN_BG + " #{piece ? piece.symbol : ' '} " + RESET_CODE
+      @grid_clone[row][col] = BRIGHT_GREEN_BG + " #{piece ? piece : ' '} " + RESET_CODE
     end
     display(true)
   end
