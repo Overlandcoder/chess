@@ -13,6 +13,10 @@ class Bishop
     @possible_moves = []
   end
 
+  def to_s
+    color == :white ? "\u001b[37;1m\u265D" : "\u001b[30m\u265D"
+  end
+
   def create_coordinate
     case color
     when :white
@@ -51,14 +55,6 @@ class Bishop
                     @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
-    end
-  end
-
-  def symbol
-    if color == :white
-      "♝"
-    elsif color == :black
-      "\u001b[30m♝"
     end
   end
 end
