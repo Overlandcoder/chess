@@ -16,7 +16,7 @@ class King
   end
 
   def to_s
-    color == :white ? "\u001b[37;1m\u265A" : "\u001b[30m\U265A"
+    color == :white ? "\u001b[37;1m\u265A" : "\u001b[30m\u265A"
   end
 
   def create_coordinate
