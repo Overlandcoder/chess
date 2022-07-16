@@ -16,6 +16,10 @@ class Queen
     @title = 'Queen'
   end
 
+  def to_s
+    color == :white ? "\u001b[37;1m\u265B" : "\u001b[30m\u265B"
+  end
+
   def create_coordinate
     case color
     when :white
@@ -54,14 +58,6 @@ class Queen
                     @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
-    end
-  end
-
-  def symbol
-    if color == :white
-      "\u001b[37;1m\u265B"
-    elsif color == :black
-      "\u001b[30m\u265B"
     end
   end
 end
