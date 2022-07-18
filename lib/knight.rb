@@ -20,15 +20,13 @@ class Knight
     color == :white ? "♞" : "\u001b[30m♞"
   end
 
+  def starting_positions
+    { :white => [[7, 1], [7, 6]], :black => [[0, 1], [0, 6]] }[color]
+  end
+
   def create_coordinate
-    case color
-    when :white
-      start_row, start_col = [[7, 1], [7, 6]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    when :black
-      start_row, start_col = [[0, 1], [0, 6]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    end
+    start_row, start_col = starting_positions[number]
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def valid_move?(row = destination.row, col = destination.col)
