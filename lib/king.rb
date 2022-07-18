@@ -19,15 +19,13 @@ class King
     color == :white ? "\u001b[37;1m\u265A" : "\u001b[30m\u265A"
   end
 
+  def starting_positions
+    { :white => [7, 4], :black => [0, 4] }[color]
+  end
+
   def create_coordinate
-    case color
-    when :white
-      start_row, start_col = [7, 4]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    when :black
-      start_row, start_col = [0, 4]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    end
+    start_row, start_col = starting_positions
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def valid_move?
