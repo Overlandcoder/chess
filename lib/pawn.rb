@@ -20,15 +20,13 @@ class Pawn
     color == :white ? "\u001b[37;1m\u265F" : "\u001b[30m\u265F"
   end
 
+  def start_row
+    { :white => 6, :black => 1 }[color]
+  end
+
   def create_coordinate
-    case color
-    when :white
-      start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
-      @position = Coordinate.new(row: 6, col: start_col)
-    when :black
-      start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
-      @position = Coordinate.new(row: 1, col: start_col)
-    end
+    start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def valid_move?
