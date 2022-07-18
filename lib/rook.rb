@@ -23,15 +23,13 @@ class Rook
     color == :white ? "\u001b[37;1m\u265C" : "\u001b[30m\u265C"
   end
 
+  def starting_positions
+    { :white => [[7, 0], [7, 7]], :black => [[0, 0], [0, 7]] }[color]
+  end
+
   def create_coordinate
-    case color
-    when :white
-      start_row, start_col = [[7, 0], [7, 7]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    when :black
-      start_row, start_col = [[0, 0], [0, 7]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    end
+    start_row, start_col = starting_positions[number]
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def valid_move?
