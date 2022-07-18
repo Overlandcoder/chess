@@ -17,15 +17,13 @@ class Bishop
     color == :white ? "\u001b[37;1m\u265D" : "\u001b[30m\u265D"
   end
 
+  def starting_positions
+    { :white => [[7, 2], [7, 5]], :black => [[0, 2], [0, 5]] }[color]
+  end
+
   def create_coordinate
-    case color
-    when :white
-      start_row, start_col = [[7, 2], [7, 5]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    when :black
-      start_row, start_col = [[0, 2], [0, 5]][number]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    end
+    start_row, start_col = starting_positions[number]
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def valid_move?
