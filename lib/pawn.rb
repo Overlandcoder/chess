@@ -11,9 +11,15 @@ class Pawn
     create_coordinate
     @possible_moves = []
     @moves_made = 0
-    @moves = [[-1, 0], [-2, 0]] if color == :white
-    @moves = [[1, 0], [2, 0]] if color == :black
     @moved_last = false
+  end
+
+  def regular_move
+    { :white => [-1, 0], :black => [1, 0] }[color]
+  end
+
+  def double_move
+    { :white => [-2, 0], :black => [2, 0] }[color]
   end
 
   def to_s
@@ -46,31 +52,28 @@ class Pawn
 
   def generate_possible_moves
     @possible_moves.clear
-    remove_two_square_moves_if_moves_made
-    remove_two_square_moves_if_path_blocked
-
-    @moves.each do |move|
-      row = position.row + move[0]
-      col = position.col + move[1]
-      next unless row.between?(0, 7) && col.between?(0, 7)
-
-      @possible_moves << [row, col] if board.square_at(row, col).nil?
-    end
+    add_single_square_move
+    add_two_square_move
     capturing_moves.each { |move| @possible_moves << move }
     add_en_passant_moves
   end
 
-  def remove_two_square_moves_if_moves_made
-    @moves.delete_if { |move| (move[0].abs > 1) && moves_made.positive? }
+  def add_single_square_move
+    row = position.row +  regular_move[0]
+    col = position.col + regular_move[1]
+    @possible_moves << [row, col] if board.square_at(row, col).nil?
   end
 
-  def remove_two_square_moves_if_path_blocked
-    @moves.delete_if do |move|
-      first_square_row = position.row - 1 if color == :white
-      first_square_row = position.row + 1 if color == :black
+  def add_two_square_move
+    return unless moves_made.zero?
 
-      !board.square_at(first_square_row, position.col).nil?
-    end
+    row = position.row + regular_move[0]
+    col = position.col + regular_move[1]
+    return unless board.square_at(row, col).nil?
+
+    row = position.row + double_move[0]
+    col = position.col + double_move[1]
+    @possible_moves << [row, col] if board.square_at(row, col).nil?
   end
 
   def capturing_moves(removing_king_checks = false)
