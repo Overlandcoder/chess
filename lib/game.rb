@@ -45,7 +45,7 @@ class Game
   def play_game
     setup
     @current_player = player1
-    play_round until checkmate?
+    play_round until checkmate? || stalemate?
     conclusion
   end
 
@@ -58,7 +58,7 @@ class Game
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
     @destination = choose_destination
-    castling?
+    can_castle?
     en_passant_capture
     make_move
     promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
@@ -111,6 +111,7 @@ class Game
     create_piece(piece_type, current_player.color, board, 0)
     new_piece = board.pieces(current_player.color)[-1]
     board.update(chosen_piece.position.row, chosen_piece.position.col, new_piece)
+    new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
     board.remove_piece(chosen_piece)
   end
 
@@ -243,7 +244,7 @@ class Game
     king.possible_moves << [@castling_row, 2] if queenside_castle
   end
 
-  def castling?
+  def can_castle?
     king.is_castling = false
     return false unless chosen_piece == king
 
