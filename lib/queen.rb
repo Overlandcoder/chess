@@ -1,6 +1,5 @@
 class Queen
-  attr_reader :color, :number, :position, :destination, :board,
-              :possible_moves, :title
+  attr_reader :color, :number, :position, :destination, :board
 
   attr_accessor :possible_moves
 
@@ -11,24 +10,22 @@ class Queen
     @color = color
     @number = number
     @board = board
+    @promoted = false
     create_coordinate
     @possible_moves = []
-    @title = 'Queen'
+  end
+
+  def starting_positions
+    { :white => [7, 3], :black => [0, 3] }[color]
+  end
+
+  def create_coordinate
+    start_row, start_col = starting_positions
+    @position = Coordinate.new(row: start_row, col: start_col)
   end
 
   def to_s
     color == :white ? "\u001b[37;1m\u265B" : "\u001b[30m\u265B"
-  end
-
-  def create_coordinate
-    case color
-    when :white
-      start_row, start_col = [7, 3]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    when :black
-      start_row, start_col = [0, 3]
-      @position = Coordinate.new(row: start_row, col: start_col)
-    end
   end
 
   def valid_move?
