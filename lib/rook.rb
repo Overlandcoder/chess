@@ -2,8 +2,7 @@ require 'pry-byebug'
 require_relative 'board'
 
 class Rook
-  attr_reader :color, :number, :position, :destination, :board, :possible_moves,
-              :title, :moves_made
+  attr_reader :color, :number, :position, :destination, :board, :moves_made
 
   attr_accessor :possible_moves
 
@@ -15,7 +14,6 @@ class Rook
     @board = board
     create_coordinate
     @possible_moves = []
-    @title = 'Rook'
     @moves_made = 0
   end
 
