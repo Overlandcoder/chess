@@ -41,4 +41,34 @@ describe Rook do
       rook.create_coordinate
     end
   end
+
+  describe '#generate_possible_moves' do
+    context 'when the next square contains own piece' do
+      let(:position) { instance_double(Coordinate, row: 4, col: 4) }
+
+      it 'cannot move onto own piece one row up' do
+        allow(board).to receive(:nil_or_opponent?).and_return(false)
+        expect(rook.possible_moves.include?([3, 4])).to be false
+        rook.generate_possible_moves
+      end
+
+      it 'cannot move onto own piece one column right' do
+        allow(board).to receive(:nil_or_opponent?).and_return(false)
+        expect(rook.possible_moves.include?([4, 5])).to be false
+        rook.generate_possible_moves
+      end
+
+      it 'cannot move onto own piece one row down' do
+        allow(board).to receive(:nil_or_opponent?).and_return(false)
+        expect(rook.possible_moves.include?([5, 4])).to be false
+        rook.generate_possible_moves
+      end
+
+      it 'cannot move onto own piece one column left' do
+        allow(board).to receive(:nil_or_opponent?).and_return(false)
+        expect(rook.possible_moves.include?([4, 3])).to be false
+        rook.generate_possible_moves
+      end
+    end
+  end
 end
