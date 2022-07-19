@@ -18,7 +18,7 @@ class Pawn
     { :white => [-1, 0], :black => [1, 0] }[color]
   end
 
-  def double_move
+  def two_square_move
     { :white => [-2, 0], :black => [2, 0] }[color]
   end
 
@@ -52,13 +52,13 @@ class Pawn
 
   def generate_possible_moves
     @possible_moves.clear
-    add_single_square_move
+    add_regular_move
     add_two_square_move
     add_capturing_moves
     add_en_passant_moves
   end
 
-  def add_single_square_move
+  def add_regular_move
     row = position.row +  regular_move[0]
     col = position.col + regular_move[1]
     @possible_moves << [row, col] if board.square_at(row, col).nil?
