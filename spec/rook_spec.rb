@@ -13,30 +13,21 @@ describe Rook do
     let(:position) { instance_double(Coordinate, row: 7, col: 0) }
     let(:destination) { instance_double(Coordinate, row: 2, col: 0) }
 
-    context '' do
-      before do
-        allow(rook).to receive(:position).and_return(position)
-        allow(rook).to receive(:destination).and_return(destination)
-        allow(position).to receive(:update_col)
-      end
-
-      it 'sends #update_row to Coordinate' do
-        expect(position).to receive(:update_row).with(2)
-        rook.update_position
-      end
+    before do
+      allow(rook).to receive(:position).and_return(position)
+      allow(rook).to receive(:destination).and_return(destination)
     end
 
-    context '' do
-      before do
-        allow(rook).to receive(:position).and_return(position)
-        allow(rook).to receive(:destination).and_return(destination)
-        allow(position).to receive(:update_row)
-      end
+    it 'sends #update_row to Coordinate' do
+      allow(position).to receive(:update_col)
+      expect(position).to receive(:update_row).with(2)
+      rook.update_position
+    end
 
-      it 'sends #update_col to Coordinate' do
-        expect(position).to receive(:update_col).with(0)
-        rook.update_position
-      end
+    it 'sends #update_col to Coordinate' do
+      allow(position).to receive(:update_row)
+      expect(position).to receive(:update_col).with(0)
+      rook.update_position
     end
   end
 
