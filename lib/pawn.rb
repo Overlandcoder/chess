@@ -54,7 +54,7 @@ class Pawn
     @possible_moves.clear
     add_single_square_move
     add_two_square_move
-    capturing_moves.each { |move| @possible_moves << move }
+    add_capturing_moves
     add_en_passant_moves
   end
 
@@ -94,6 +94,10 @@ class Pawn
   def capturing_moves_only
     @possible_moves.clear
     capturing_moves(true)
+  end
+
+  def add_capturing_moves
+    capturing_moves.each { |move| @possible_moves << move }
   end
 
   def add_en_passant_moves
