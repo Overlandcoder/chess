@@ -71,8 +71,8 @@ class Pawn
     col = position.col + regular_move[1]
     return unless board.square_at(row, col).nil?
 
-    row = position.row + double_move[0]
-    col = position.col + double_move[1]
+    row = position.row + two_square_move[0]
+    col = position.col + two_square_move[1]
     @possible_moves << [row, col] if board.square_at(row, col).nil?
   end
 
