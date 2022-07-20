@@ -19,8 +19,6 @@ class Game
     create_players
     create_pieces(player1.color, player1)
     create_pieces(player2.color, player2)
-    board.attach_pieces(board.white_pieces)
-    board.attach_pieces(board.black_pieces)
   end
 
   def create_players
@@ -29,16 +27,16 @@ class Game
   end
 
   def create_pieces(color, player)
-    PIECE_TYPES.each { |type| create_piece(type, color, board) }
+    PIECE_TYPES.each { |piece_type| create_piece(piece_type, color, board) }
   end
 
-  def create_piece(type, color, board, num = 1)
-    num = 7 if type == :pawn
-    num = 0 if type == :king || type == :queen
+  def create_piece(piece_type, color, board, num = 1)
+    num = 7 if piece_type == :pawn
+    num = 0 if piece_type == :king || piece_type == :queen
 
     (0..num).each do |number|
-      piece = Piece.for(type, color, number, board)
-      board.add_piece(piece)
+      piece = Piece.for(piece_type, color, number, board)
+      board.place(piece.position.row, piece.position.col, piece)
     end
   end
 
@@ -110,7 +108,7 @@ class Game
     piece_type = gets.chomp.to_sym
     create_piece(piece_type, current_player.color, board, 0)
     new_piece = board.pieces(current_player.color)[-1]
-    board.update(chosen_piece.position.row, chosen_piece.position.col, new_piece)
+    board.place(chosen_piece.position.row, chosen_piece.position.col, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
     board.remove_piece(chosen_piece)
   end
@@ -137,9 +135,9 @@ class Game
   end
 
   def clear_old_position
-    board.update(piece_position.row, piece_position.col, nil)
-    board.update(@castling_row, 7, nil) if king.is_castling && @castling_kingside
-    board.update(@castling_row, 0, nil) if king.is_castling && @castling_queenside
+    board.place(piece_position.row, piece_position.col, nil)
+    board.place(@castling_row, 7, nil) if king.is_castling && @castling_kingside
+    board.place(@castling_row, 0, nil) if king.is_castling && @castling_queenside
   end
 
   def opponent
@@ -189,8 +187,8 @@ class Game
   end
 
   def simulate_move(row, col, move, piece)
-    @board_copy.update(row, col, nil)
-    @board_copy.update(move[0], move[1], piece)
+    @board_copy.place(row, col, nil)
+    @board_copy.place(move[0], move[1], piece)
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
@@ -284,7 +282,7 @@ class Game
     return unless piece_to_remove.is_a?(Pawn) && piece_to_remove.moved_last
 
     board.remove_piece(piece_to_remove)
-    board.update(piece_to_remove.position.row, piece_to_remove.position.col, nil)
+    board.place(piece_to_remove.position.row, piece_to_remove.position.col, nil)
   end
 
   def checkmate?
@@ -322,9 +320,9 @@ class Game
   end
 
   def update_board
-    board.update(@castling_row, 5, r_rook) if king.is_castling && @castling_kingside
-    board.update(@castling_row, 3, l_rook) if king.is_castling && @castling_queenside
-    board.update(destination.row, destination.col, chosen_piece)
+    board.place(@castling_row, 5, r_rook) if king.is_castling && @castling_kingside
+    board.place(@castling_row, 3, l_rook) if king.is_castling && @castling_queenside
+    board.place(destination.row, destination.col, chosen_piece)
   end
 
   def update_piece_position
