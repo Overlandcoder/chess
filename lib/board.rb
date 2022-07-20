@@ -16,8 +16,20 @@ class Board
   end
 
   def pieces(player_color)
+    store_pieces
     return @white_pieces if player_color == :white
     return @black_pieces if player_color == :black
+  end
+
+  def store_pieces
+    @grid.each do |grid_row|
+      grid_row.each do |piece|
+        next if piece.nil?
+
+        @white_pieces << piece if piece.color == :white
+        @black_pieces << piece if piece.color == :black
+      end
+    end
   end
 
   def add_piece(piece)
@@ -79,19 +91,11 @@ class Board
     display(true)
   end
 
-  def attach_pieces(pieces)
-    pieces.each do |piece|
-      row = piece.position.row
-      column = piece.position.col
-      update(row, column, piece)
-    end
-  end
-
   def square_at(row, column)
     @grid[row][column]
   end
 
-  def update(row, column, piece)
+  def place(row, column, piece)
     @grid[row][column] = piece
   end
 
