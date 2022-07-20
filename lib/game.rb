@@ -8,28 +8,28 @@ class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
               :destination, :chosen_piece
 
-  TYPES = [:rook, :knight, :bishop, :queen, :king, :pawn]
+  PIECE_TYPES = [:rook, :knight, :bishop, :queen, :king, :pawn]
 
   def initialize
     @board = Board.new
   end
 
   def setup
-    intro_message
-    @player1 = create_player(:white)
-    @player2 = create_player(:black)
+    print_intro_message
+    create_players
     create_pieces(player1.color, player1)
     create_pieces(player2.color, player2)
     board.attach_pieces(board.white_pieces)
     board.attach_pieces(board.black_pieces)
   end
 
-  def create_player(color)
-    Player.new(color)
+  def create_players
+    @player1 = Player.new(:white)
+    @player2 = Player.new(:black)
   end
 
   def create_pieces(color, player)
-    TYPES.each { |type| create_piece(type, color, board) }
+    PIECE_TYPES.each { |type| create_piece(type, color, board) }
   end
 
   def create_piece(type, color, board, num = 1)
@@ -333,7 +333,7 @@ class Game
     chosen_piece.update_position
   end
 
-  def intro_message
+  def print_intro_message
     puts <<~INTRO
 Welcome to Chess!
 This is a two-player game. To give you an idea of how the grid positioning
