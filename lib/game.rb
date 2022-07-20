@@ -18,8 +18,8 @@ class Game
     intro_message
     @player1 = create_player(:white)
     @player2 = create_player(:black)
-    pieces(player1.color, player1)
-    pieces(player2.color, player2)
+    create_pieces(player1.color, player1)
+    create_pieces(player2.color, player2)
     board.attach_pieces(board.white_pieces)
     board.attach_pieces(board.black_pieces)
   end
@@ -28,7 +28,7 @@ class Game
     Player.new(color)
   end
 
-  def pieces(color, player)
+  def create_pieces(color, player)
     TYPES.each { |type| create_piece(type, color, board) }
   end
 
@@ -76,8 +76,8 @@ class Game
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
     chosen_piece.generate_possible_moves
     remove_check_moves
+    add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
-    return if chosen_piece.respond_to?(:checkmate?) && chosen_piece.checkmate?
     @destination = choose_destination
   end
 
