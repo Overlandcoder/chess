@@ -107,18 +107,13 @@ class Game
     puts 'queen, rook, bishop or knight:'
     piece_type = gets.chomp.to_sym
     create_piece(piece_type, current_player.color, board, 0)
-    new_piece = board.pieces(current_player.color)[-1]
+    new_piece = board.square_at(chosen_piece.position.row, chosen_piece.position.col)
     board.place(chosen_piece.position.row, chosen_piece.position.col, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
   end
 
   def king
-    case current_player.color
-    when :white
-      board.white_pieces.find { |piece| piece.is_a?(King)}
-    when :black
-      board.black_pieces.find { |piece| piece.is_a?(King)}
-    end
+    board.pieces(current_player.color).find { |piece| piece.is_a?(King) }
   end
 
   def piece_selection
