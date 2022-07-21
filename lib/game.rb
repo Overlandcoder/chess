@@ -110,7 +110,6 @@ class Game
     new_piece = board.pieces(current_player.color)[-1]
     board.place(chosen_piece.position.row, chosen_piece.position.col, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
-    board.remove_piece(chosen_piece)
   end
 
   def king
@@ -130,8 +129,7 @@ class Game
   def remove_opponent_piece
     return if board.square_at(destination.row, destination.col).nil?
 
-    piece_to_remove = board.square_at(destination.row, destination.col)
-    board.remove_piece(piece_to_remove)
+    board.remove_piece(destination.row, destination.col)
   end
 
   def clear_old_position
@@ -281,7 +279,7 @@ class Game
 
     return unless piece_to_remove.is_a?(Pawn) && piece_to_remove.moved_last
 
-    board.remove_piece(piece_to_remove)
+    board.remove_piece(chosen_piece.position.row, chosen_piece.destination.col)
     board.place(piece_to_remove.position.row, piece_to_remove.position.col, nil)
   end
 
