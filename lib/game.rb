@@ -49,6 +49,7 @@ class Game
 
   def play_round
     board.display
+    p board.pieces(current_player.color).length
     piece_selection
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
     chosen_piece.generate_possible_moves
@@ -106,8 +107,7 @@ class Game
     puts 'Time to promote this pawn! Enter one of the following piece names...'
     puts 'queen, rook, bishop or knight:'
     piece_type = gets.chomp.to_sym
-    create_piece(piece_type, current_player.color, board, 0)
-    new_piece = board.square_at(chosen_piece.position.row, chosen_piece.position.col)
+    new_piece = Piece.for(piece_type, current_player.color, 0, board)
     board.place(chosen_piece.position.row, chosen_piece.position.col, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
   end
