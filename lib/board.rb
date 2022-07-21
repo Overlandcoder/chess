@@ -16,9 +16,15 @@ class Board
   end
 
   def pieces(player_color)
+    clear_pieces
     store_pieces
     return @white_pieces if player_color == :white
     return @black_pieces if player_color == :black
+  end
+
+  def clear_pieces
+    @white_pieces.clear
+    @black_pieces.clear
   end
 
   def store_pieces
@@ -37,9 +43,8 @@ class Board
     @black_pieces << piece if piece.color == :black
   end
 
-  def remove_piece(piece)
-    @white_pieces.delete(piece) if piece.color == :white
-    @black_pieces.delete(piece) if piece.color == :black
+  def remove_piece(row, col)
+    @grid[row][col] = nil
   end
 
   def display(highlighted = false)
