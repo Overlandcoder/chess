@@ -9,11 +9,11 @@ class Pawn < Piece
   end
 
   def regular_move
-    { :white => [-1, 0], :black => [1, 0] }[color]
+    { white: [-1, 0], black: [1, 0] }[color]
   end
 
   def two_square_move
-    { :white => [-2, 0], :black => [2, 0] }[color]
+    { white: [-2, 0], black: [2, 0] }[color]
   end
 
   def to_s
@@ -21,7 +21,7 @@ class Pawn < Piece
   end
 
   def start_row
-    { :white => 6, :black => 1 }[color]
+    { white: 6, black: 1 }[color]
   end
 
   def create_coordinate
@@ -54,7 +54,7 @@ class Pawn < Piece
   end
 
   def add_regular_move
-    row = position.row +  regular_move[0]
+    row = position.row + regular_move[0]
     col = position.col + regular_move[1]
     @possible_moves << [row, col] if board.square_at(row, col).nil?
   end
@@ -80,8 +80,8 @@ class Pawn < Piece
       row = position.row + move[0]
       col = position.col + move[1]
       moves << [row, col] if row.between?(0, 7) &&
-                              col.between?(0, 7) &&
-                              opponent?(row, col, removing_king_checks)
+                             col.between?(0, 7) &&
+                             opponent?(row, col, removing_king_checks)
     end
     moves
   end

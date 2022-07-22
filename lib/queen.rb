@@ -11,7 +11,7 @@ class Queen < Piece
   end
 
   def starting_positions
-    { :white => [7, 3], :black => [0, 3] }[color]
+    { white: [7, 3], black: [0, 3] }[color]
   end
 
   def create_coordinate
@@ -46,8 +46,9 @@ class Queen < Piece
         row += move[0]
         col += move[1]
         break unless row.between?(0, 7) && col.between?(0, 7) &&
-                    board.nil_or_opponent?(row, col, color)
-                    @possible_moves << [row, col]
+                     board.nil_or_opponent?(row, col, color)
+
+        @possible_moves << [row, col]
         break unless board.square_at(row, col).nil?
       end
     end

@@ -15,7 +15,7 @@ class King < Piece
   end
 
   def starting_positions
-    { :white => [7, 4], :black => [0, 4] }[color]
+    { white: [7, 4], black: [0, 4] }[color]
   end
 
   def create_coordinate
@@ -36,15 +36,18 @@ class King < Piece
     position.update_col(col)
     @moves_made += 1
   end
-  
+
   def generate_possible_moves(board)
     @possible_moves.clear
 
     POSSIBLE_MOVES.each do |move|
       row = position.row + move[0]
       col = position.col + move[1]
-      @possible_moves << [row, col] if row.between?(0, 7) && col.between?(0, 7) &&
-                                board.nil_or_opponent?(row, col, color)
+
+      next unless row.between?(0, 7) && col.between?(0, 7) &&
+                  board.nil_or_opponent?(row, col, color)
+
+      @possible_moves << [row, col]
     end
   end
 end
