@@ -1,7 +1,3 @@
-require_relative 'player'
-require_relative 'board'
-require_relative 'piece'
-require_relative 'coordinate'
 require 'pry-byebug'
 
 class Game
@@ -334,4 +330,4 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
   end
 end
 
-Game.new.play_game
+# Game.new.play_game
