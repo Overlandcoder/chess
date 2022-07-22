@@ -1,10 +1,4 @@
-require_relative 'board'
-
-class Knight
-  attr_reader :color, :number, :position, :destination, :board
-
-  attr_accessor :possible_moves
-
+class Knight < Piece
   POSSIBLE_MOVES = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                     [2, 1], [2, -1], [-2, 1], [-2, -1]]
 
