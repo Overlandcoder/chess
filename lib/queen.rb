@@ -1,8 +1,4 @@
-class Queen
-  attr_reader :color, :number, :position, :destination, :board
-
-  attr_accessor :possible_moves
-
+class Queen < Piece
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1],
                     [-1, 1], [1, -1], [1, 1], [-1, -1]]
 
