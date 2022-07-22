@@ -1,8 +1,4 @@
-class King
-  attr_reader :color, :number, :position, :destination, :board, :moves_made
-
-  attr_accessor :possible_moves, :is_castling
-
+class King < Piece
   POSSIBLE_MOVES = [[-1, -1], [0, -1], [1, -1], [1, 0],
                     [1, 1], [0, 1], [-1, 1], [-1, 0]]
 
