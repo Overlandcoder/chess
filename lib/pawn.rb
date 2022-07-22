@@ -1,9 +1,4 @@
-class Pawn
-  attr_reader :color, :number, :position, :destination, :board, :possible_moves,
-              :moves_made, :moved_two_squares
-
-  attr_accessor :capturing_en_passant, :moved_last
-
+class Pawn < Piece
   def initialize(color, number, board)
     @color = color
     @number = number
