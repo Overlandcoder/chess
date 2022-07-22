@@ -1,11 +1,4 @@
-require 'pry-byebug'
-require_relative 'board'
-
-class Rook
-  attr_reader :color, :number, :position, :destination, :board, :moves_made
-
-  attr_accessor :possible_moves
-
+class Rook < Piece
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
   def initialize(color, number, board)
