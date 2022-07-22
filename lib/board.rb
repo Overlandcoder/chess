@@ -16,13 +16,13 @@ class Board
   end
 
   def pieces(player_color)
-    clear_pieces
+    clear_stored_pieces
     store_pieces
     return @white_pieces if player_color == :white
     return @black_pieces if player_color == :black
   end
 
-  def clear_pieces
+  def clear_stored_pieces
     @white_pieces.clear
     @black_pieces.clear
   end
@@ -49,16 +49,16 @@ class Board
 
   def display(highlighted = false)
     add_background_color unless highlighted
-    column_headings
+    print_column_headings
 
     (0..7).each do |row|
       puts "  #{8 - row} #{@grid_clone[row].join} #{8 - row}  "
     end
 
-    column_headings
+    print_column_headings
   end
 
-  def column_headings
+  def print_column_headings
     puts "     #{('A'..'H').to_a.join('  ')}     "
   end
 
