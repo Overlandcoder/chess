@@ -1,8 +1,4 @@
-class Bishop
-  attr_reader :color, :number, :position, :destination, :board
-
-  attr_accessor :possible_moves
-
+class Bishop < Piece
   POSSIBLE_MOVES = [[-1, 1], [1, -1], [1, 1], [-1, -1]]
 
   def initialize(color, number, board)
