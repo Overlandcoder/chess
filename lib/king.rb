@@ -2,10 +2,9 @@ class King < Piece
   POSSIBLE_MOVES = [[-1, -1], [0, -1], [1, -1], [1, 0],
                     [1, 1], [0, 1], [-1, 1], [-1, 0]]
 
-  def initialize(color, number, board)
+  def initialize(color, number)
     @color = color
     @number = number
-    @board = board
     create_coordinate
     @possible_moves = []
     @moves_made = 0
@@ -38,7 +37,7 @@ class King < Piece
     @moves_made += 1
   end
   
-  def generate_possible_moves
+  def generate_possible_moves(board)
     @possible_moves.clear
 
     POSSIBLE_MOVES.each do |move|

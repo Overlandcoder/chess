@@ -2,10 +2,9 @@ class Queen < Piece
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1],
                     [-1, 1], [1, -1], [1, 1], [-1, -1]]
 
-  def initialize(color, number, board)
+  def initialize(color, number)
     @color = color
     @number = number
-    @board = board
     @promoted = false
     create_coordinate
     @possible_moves = []
@@ -37,7 +36,7 @@ class Queen < Piece
     position.update_col(col)
   end
 
-  def generate_possible_moves
+  def generate_possible_moves(board)
     @possible_moves.clear
 
     POSSIBLE_MOVES.each do |move|

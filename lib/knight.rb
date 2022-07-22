@@ -2,10 +2,9 @@ class Knight < Piece
   POSSIBLE_MOVES = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                     [2, 1], [2, -1], [-2, 1], [-2, -1]]
 
-  def initialize(color, number, board)
+  def initialize(color, number)
     @color = color
     @number = number
-    @board = board
     create_coordinate
     @possible_moves = []
   end
@@ -39,7 +38,7 @@ class Knight < Piece
     position.update_col(col)
   end
 
-  def generate_possible_moves
+  def generate_possible_moves(board)
     @possible_moves.clear
 
     (0..7).each do |row|

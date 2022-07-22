@@ -5,7 +5,7 @@ class Piece
   attr_accessor :possible_moves, :is_castling, :capturing_en_passant,
                 :moved_last
 
-  def self.for(piece_type, color, number, board)
+  def self.for(piece_type, color, number)
     case piece_type
     when :rook
       Rook
@@ -19,6 +19,6 @@ class Piece
       King
     when :pawn
       Pawn
-    end.new(color, number, board)
+    end.new(color, number)
   end
 end

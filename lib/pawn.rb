@@ -1,8 +1,7 @@
 class Pawn < Piece
-  def initialize(color, number, board)
+  def initialize(color, number)
     @color = color
     @number = number
-    @board = board
     create_coordinate
     @possible_moves = []
     @moves_made = 0
@@ -45,7 +44,8 @@ class Pawn < Piece
     @moves_made += 1
   end
 
-  def generate_possible_moves
+  def generate_possible_moves(board)
+    @board = board
     @possible_moves.clear
     add_regular_move
     add_two_square_move

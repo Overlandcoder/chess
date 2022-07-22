@@ -23,15 +23,15 @@ class Game
   end
 
   def create_pieces(color, player)
-    PIECE_TYPES.each { |piece_type| create_piece(piece_type, color, board) }
+    PIECE_TYPES.each { |piece_type| create_piece(piece_type, color) }
   end
 
-  def create_piece(piece_type, color, board, num = 1)
+  def create_piece(piece_type, color, num = 1)
     num = 7 if piece_type == :pawn
     num = 0 if piece_type == :king || piece_type == :queen
 
     (0..num).each do |number|
-      piece = Piece.for(piece_type, color, number, board)
+      piece = Piece.for(piece_type, color, number)
       board.place(piece.position.row, piece.position.col, piece)
     end
   end
@@ -48,7 +48,7 @@ class Game
     p board.pieces(current_player.color).length
     piece_selection
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
-    chosen_piece.generate_possible_moves
+    chosen_piece.generate_possible_moves(board)
     remove_check_moves
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
@@ -69,7 +69,7 @@ class Game
     board.display
     piece_selection
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
-    chosen_piece.generate_possible_moves
+    chosen_piece.generate_possible_moves(board)
     remove_check_moves
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
@@ -199,7 +199,7 @@ class Game
         if piece.is_a?(Pawn)
           possible_moves << piece.capturing_moves_only
         else
-          piece.generate_possible_moves
+          piece.generate_possible_moves(board)
           possible_moves << piece.possible_moves
         end
       end
@@ -280,7 +280,7 @@ class Game
 
   def no_moves_left?
     board.pieces(current_player.color).all? do |piece|
-      piece.generate_possible_moves
+      piece.generate_possible_moves(board)
       remove_check_moves(piece)
       piece.possible_moves.length.zero?
     end
@@ -329,5 +329,3 @@ to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
     INTRO
   end
 end
-
-# Game.new.play_game
