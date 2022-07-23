@@ -49,17 +49,13 @@ class Board
 
   def display(highlighted = false)
     add_background_color unless highlighted
-    print_column_headings
-
-    (0..7).each do |row|
-      puts "  #{8 - row} #{@grid_clone[row].join} #{8 - row}  "
-    end
-
-    print_column_headings
+    puts column_headings
+    (0..7).each { |row| puts "  #{8 - row} #{@grid_clone[row].join} #{8 - row}  " }
+    puts column_headings
   end
 
-  def print_column_headings
-    puts "     #{('A'..'H').to_a.join('  ')}     "
+  def column_headings
+    "     #{('A'..'H').to_a.join('  ')}     "
   end
 
   def add_background_color
