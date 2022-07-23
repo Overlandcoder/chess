@@ -1,11 +1,10 @@
 class Queen < Piece
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1],
-                    [-1, 1], [1, -1], [1, 1], [-1, -1]]
+                    [-1, 1], [1, -1], [1, 1], [-1, -1]].freeze
 
   def initialize(color, number)
     @color = color
     @number = number
-    @promoted = false
     create_coordinate
     @possible_moves = []
   end

@@ -1,5 +1,5 @@
 class Rook < Piece
-  POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+  POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]].freeze
 
   def initialize(color, number)
     @color = color
@@ -24,10 +24,6 @@ class Rook < Piece
 
   def valid_move?
     @possible_moves.include?([destination.row, destination.col])
-  end
-
-  def set_destination(coordinate)
-    @destination = coordinate
   end
 
   def update_position(row = destination.row, col = destination.col)

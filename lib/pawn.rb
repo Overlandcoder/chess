@@ -33,10 +33,6 @@ class Pawn < Piece
     @possible_moves.include?([destination.row, destination.col])
   end
 
-  def set_destination(coordinate)
-    @destination = coordinate
-  end
-
   def update_position(row = destination.row, col = destination.col)
     two_square_move?
     position.update_row(row)

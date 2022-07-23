@@ -151,7 +151,7 @@ class Game
 
     row, col = coordinates(user_input)
     destination_coordinates = Coordinate.new(row: row, col: col)
-    chosen_piece.set_destination(destination_coordinates)
+    chosen_piece.destination = destination_coordinates
 
     return destination_coordinates if chosen_piece.valid_move? &&
                                       nil_or_opponent?(row, col)

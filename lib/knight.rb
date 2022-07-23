@@ -1,6 +1,6 @@
 class Knight < Piece
   POSSIBLE_MOVES = [[1, 2], [1, -2], [-1, 2], [-1, -2],
-                    [2, 1], [2, -1], [-2, 1], [-2, -1]]
+                    [2, 1], [2, -1], [-2, 1], [-2, -1]].freeze
 
   def initialize(color, number)
     @color = color
@@ -27,10 +27,6 @@ class Knight < Piece
       position.row + move[0] == row &&
         position.col + move[1] == col
     end
-  end
-
-  def set_destination(coordinate)
-    @destination = coordinate
   end
 
   def update_position(row = destination.row, col = destination.col)

@@ -1,6 +1,6 @@
 class King < Piece
   POSSIBLE_MOVES = [[-1, -1], [0, -1], [1, -1], [1, 0],
-                    [1, 1], [0, 1], [-1, 1], [-1, 0]]
+                    [1, 1], [0, 1], [-1, 1], [-1, 0]].freeze
 
   def initialize(color, number)
     @color = color
@@ -25,10 +25,6 @@ class King < Piece
 
   def valid_move?
     @possible_moves.include?([destination.row, destination.col])
-  end
-
-  def set_destination(coordinate)
-    @destination = coordinate
   end
 
   def update_position(row = destination.row, col = destination.col)
