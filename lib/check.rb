@@ -1,17 +1,22 @@
 module Check
-  def remove_check_moves(piece = chosen_piece)
-    current_row = piece.position.row
-    current_col = piece.position.col
+  def remove_check_moves(current_piece)
+    @current_piece = current_piece
+    current_row = @current_piece.position.row
+    current_col = @current_piece.position.col
     moves_to_delete = []
 
-    piece.possible_moves.each do |move|
+    @current_piece.possible_moves.each do |move|
       @board_copy = Marshal.load(Marshal.dump(board))
-      simulate_move(current_row, current_col, move, piece)
-      moves_to_delete << move if king_in_check? && !piece.is_a?(King)
+      simulate_move(current_row, current_col, move, @current_piece)
+      moves_to_delete << move if king_in_check? && !@current_piece.is_a?(King)
       remove_king_checks
     end
+#
+    moves_to_delete.each { |move| @current_piece.possible_moves.delete(move) }
+  end
 
-    moves_to_delete.each { |move| piece.possible_moves.delete(move) }
+  def king
+    board.pieces(@current_piece.color).find { |piece| piece.is_a?(King) }
   end
 
   def simulate_move(row, col, move, piece)
@@ -19,27 +24,31 @@ module Check
     @board_copy.place(move[0], move[1], piece)
   end
 
-  def king_in_check?(row = king.position.row, col = king.position.col)
-    opponent_moves.any? { |move| move == [row, col] }
+  def king_in_check?
+    row = king.position.row
+    col = king.position.col
+    opponent_moves.any? { |opponent_move| opponent_move == [row, col] }
   end
 
   def remove_king_checks
-    king.possible_moves.delete_if { |move| opponent_moves.include?(move) }
+    king.possible_moves.delete_if { |king_move|
+      opponent_moves.include?(king_move)
+    }
   end
 
   def opponent_moves
     possible_moves = []
     (0..7).each do |row|
       (0..7).each do |col|
-        piece = @board_copy.square_at(row, col)
-        next if piece.nil?
-        next unless piece.color == opponent.color
+        opponent_piece = @board_copy.square_at(row, col)
+        next if opponent_piece.nil?
+        next unless opponent_piece.color == @current_piece.color
 
-        if piece.is_a?(Pawn)
-          possible_moves << piece.capturing_moves_only
+        if opponent_piece.is_a?(Pawn)
+          possible_moves << opponent_piece.capturing_moves_only
         else
-          piece.generate_possible_moves(@board_copy)
-          possible_moves << piece.possible_moves
+          opponent_piece.generate_possible_moves(@board_copy)
+          possible_moves << opponent_piece.possible_moves
         end
       end
     end

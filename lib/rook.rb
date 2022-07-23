@@ -48,5 +48,6 @@ class Rook < Piece
         break unless board.square_at(row, col).nil?
       end
     end
+    remove_check_moves(self)
   end
 end

@@ -45,5 +45,6 @@ class King < Piece
 
       @possible_moves << [row, col]
     end
+    remove_check_moves(self)
   end
 end

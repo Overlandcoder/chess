@@ -47,6 +47,7 @@ class Pawn < Piece
     add_two_square_move
     add_capturing_moves
     add_en_passant_moves
+    remove_check_moves(self)
   end
 
   def add_regular_move
