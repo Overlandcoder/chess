@@ -1,5 +1,5 @@
 module Check
-  def remove_check_moves(current_piece)
+  def remove_check_moves(current_piece, board)
     @current_piece = current_piece
     current_row = @current_piece.position.row
     current_col = @current_piece.position.col
@@ -7,7 +7,7 @@ module Check
 
     @current_piece.possible_moves.each do |move|
       @board_copy = Marshal.load(Marshal.dump(board))
-      simulate_move(current_row, current_col, move, @current_piece)
+      simulate_move(current_row, current_col, move)
       moves_to_delete << move if king_in_check? && !@current_piece.is_a?(King)
       remove_king_checks
     end
@@ -19,9 +19,9 @@ module Check
     board.pieces(@current_piece.color).find { |piece| piece.is_a?(King) }
   end
 
-  def simulate_move(row, col, move, piece)
+  def simulate_move(row, col, move)
     @board_copy.place(row, col, nil)
-    @board_copy.place(move[0], move[1], piece)
+    @board_copy.place(move[0], move[1], @current_piece)
   end
 
   def king_in_check?
