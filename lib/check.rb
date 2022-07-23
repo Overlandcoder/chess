@@ -38,7 +38,7 @@ module Check
         if piece.is_a?(Pawn)
           possible_moves << piece.capturing_moves_only
         else
-          piece.generate_possible_moves(board)
+          piece.generate_possible_moves(@board_copy)
           possible_moves << piece.possible_moves
         end
       end
