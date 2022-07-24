@@ -40,10 +40,17 @@ class Game
   def play_game
     setup
     @current_player = player1
-    binding.pry
-    play_round until Evaluation.new(board, current_player.color).checkmate? ||
-    Evaluation.new(board, current_player.color).stalemate?
+    play_rounds
+    play_round until checkmate? || stalemate?
     conclusion
+  end
+
+  def checkmate?
+    Evaluation.new(board, current_player.color).checkmate?
+  end
+
+  def stalemate?
+    Evaluation.new(board, current_player.color).stalemate?
   end
 
   def play_round
