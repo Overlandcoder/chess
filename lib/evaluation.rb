@@ -11,7 +11,6 @@ class Evaluation
     moves_to_delete = []
 
     current_piece.possible_moves.each do |move|
-      binding.pry
       @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move, current_piece)
       moves_to_delete << move if king_in_check? && !current_piece.is_a?(King)
@@ -46,8 +45,7 @@ class Evaluation
     (0..7).each do |row|
       (0..7).each do |col|
         opponent_piece = @board_copy.square_at(row, col)
-        next if opponent_piece.nil?
-        next unless opponent_piece.color == @color
+        next if opponent_piece.nil? || opponent_piece.color == @color
 
         if opponent_piece.is_a?(Pawn)
           possible_moves << opponent_piece.capturing_moves_only
