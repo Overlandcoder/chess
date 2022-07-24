@@ -1,8 +1,6 @@
 require 'pry-byebug'
-require_relative 'check'
 
 class Game
-  include Check
   
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
               :destination, :chosen_piece
@@ -42,17 +40,17 @@ class Game
   def play_game
     setup
     @current_player = player1
-    play_round until checkmate? || stalemate?
+    binding.pry
+    play_round until Evaluation.new(board, current_player.color).checkmate? ||
+    Evaluation.new(board, current_player.color).stalemate?
     conclusion
   end
 
   def play_round
     board.display
-    p board.pieces(current_player.color).length
     piece_selection
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
     chosen_piece.generate_possible_moves(board)
-    remove_check_moves
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
     @destination = choose_destination

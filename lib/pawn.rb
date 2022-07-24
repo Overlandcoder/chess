@@ -40,14 +40,14 @@ class Pawn < Piece
     @moves_made += 1
   end
 
-  def generate_possible_moves(board)
+  def generate_possible_moves(board, checking_for_check = false)
     @board = board
     @possible_moves.clear
     add_regular_move
     add_two_square_move
     add_capturing_moves
     add_en_passant_moves
-    remove_check_moves(self, board)
+    Evaluation.new(board, color).remove_check_moves(self) unless checking_for_check
   end
 
   def add_regular_move

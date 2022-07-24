@@ -34,7 +34,7 @@ class Knight < Piece
     position.update_col(col)
   end
 
-  def generate_possible_moves(board)
+  def generate_possible_moves(board, checking_for_check = false)
     @possible_moves.clear
 
     (0..7).each do |row|
@@ -45,6 +45,6 @@ class Knight < Piece
         @possible_moves << [row, col]
       end
     end
-    remove_check_moves(self, board)
+    Evaluation.new(board, color).remove_check_moves(self) unless checking_for_check
   end
 end

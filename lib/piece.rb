@@ -1,8 +1,4 @@
-require_relative 'check'
-
 class Piece
-  include Check
-
   attr_reader :color, :number, :position, :board, :moves_made,
               :moved_two_squares
 

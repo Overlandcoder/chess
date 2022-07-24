@@ -1,6 +1,7 @@
 require_relative 'game'
 require_relative 'player'
 require_relative 'board'
+require_relative 'evaluation'
 require_relative 'piece'
 require_relative 'coordinate'
 require_relative 'rook'
