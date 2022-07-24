@@ -40,7 +40,6 @@ class Game
   def play_game
     setup
     @current_player = player1
-    play_rounds
     play_round until checkmate? || stalemate?
     conclusion
   end
