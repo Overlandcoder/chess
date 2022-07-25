@@ -36,7 +36,7 @@ class Game
 
     (0..num).each do |number|
       piece = Piece.for(piece_type, color, number)
-      board.place(piece.position.row, piece.position.col, piece)
+      board.place(piece.position, piece)
     end
   end
 
@@ -57,7 +57,7 @@ class Game
   def play_round
     board.display
     piece_selection
-    board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
+    board.highlight_piece(chosen_piece.position)
     chosen_piece.generate_possible_moves(board)
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
@@ -112,7 +112,7 @@ class Game
     puts 'queen, rook, bishop or knight:'
     piece_type = gets.chomp.to_sym
     new_piece = Piece.for(piece_type, current_player.color, 0, board)
-    board.place(chosen_piece.position.row, chosen_piece.position.col, new_piece)
+    board.place(chosen_piece.position, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
   end
 
@@ -132,9 +132,9 @@ class Game
   end
 
   def clear_old_position
-    board.place(piece_position.row, piece_position.col, nil)
-    board.place(@castling_row, 7, nil) if king.is_castling && @castling_kingside
-    board.place(@castling_row, 0, nil) if king.is_castling && @castling_queenside
+    board.place(piece_position, nil)
+    board.place(Coordinate.new(row: @castling_row, col: 7), nil) if king.is_castling && @castling_kingside
+    board.place(Coordinate.new(row: @castling_row, col: 0), nil) if king.is_castling && @castling_queenside
   end
 
   def opponent
@@ -233,7 +233,7 @@ class Game
     return unless piece_to_remove.is_a?(Pawn) && piece_to_remove.moved_last
 
     board.remove_piece(chosen_piece.position.row, chosen_piece.destination.col)
-    board.place(piece_to_remove.position.row, piece_to_remove.position.col, nil)
+    board.place(piece_to_remove.position, nil)
   end
 
   def coordinates(input)
@@ -255,9 +255,9 @@ class Game
   end
 
   def update_board
-    board.place(@castling_row, 5, r_rook) if king.is_castling && @castling_kingside
-    board.place(@castling_row, 3, l_rook) if king.is_castling && @castling_queenside
-    board.place(destination.row, destination.col, chosen_piece)
+    board.place(Coordinate.new(row: @castling_row, col: 5), r_rook) if king.is_castling && @castling_kingside
+    board.place(Coordinate.new(row: @castling_row, col: 3), l_rook) if king.is_castling && @castling_queenside
+    board.place(destination, chosen_piece)
   end
 
   def update_piece_position

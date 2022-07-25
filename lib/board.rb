@@ -96,8 +96,8 @@ class Board
     @grid[row][column]
   end
 
-  def place(row, column, piece)
-    @grid[row][column] = piece
+  def place(position, piece)
+    @grid[position.row][position.col] = piece
   end
 
   def within_board?

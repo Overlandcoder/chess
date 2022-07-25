@@ -24,8 +24,8 @@ class Evaluation
   end
 
   def simulate_move(row, col, move, current_piece)
-    @board_copy.place(row, col, nil)
-    @board_copy.place(move[0], move[1], current_piece)
+    @board_copy.place(Coordinate.new(row: row, col: col), nil)
+    @board_copy.place(Coordinate.new(row: move[0], col: move[1]), current_piece)
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
