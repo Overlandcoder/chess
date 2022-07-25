@@ -77,7 +77,6 @@ class Game
     piece_selection
     board.highlight_piece(chosen_piece.position.row, chosen_piece.position.col)
     chosen_piece.generate_possible_moves(board)
-    remove_check_moves
     add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
     @destination = choose_destination
@@ -179,6 +178,10 @@ class Game
     return nil if piece.nil?
 
     piece if piece.is_a?(Rook)
+  end
+
+  def king_in_check?
+    Evaluation.new(board, current_player.color).king_in_check?
   end
 
   def add_castling_moves
