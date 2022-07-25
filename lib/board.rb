@@ -77,9 +77,9 @@ class Board
     end
   end
 
-  def highlight_piece(row, col)
-    piece = @grid[row][col]
-    @grid_clone[row][col] = ORANGE_BG + " #{piece} " + RESET_CODE
+  def highlight_piece(position)
+    piece = @grid[position.row][position.col]
+    @grid_clone[position.row][position.col] = ORANGE_BG + " #{piece} " + RESET_CODE
   end
 
   def highlight_possible_moves(positions)
