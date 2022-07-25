@@ -1,21 +1,20 @@
 require 'pry-byebug'
 
 class Game
-  
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
               :destination, :chosen_piece
 
-  PIECE_TYPES = [:rook, :knight, :bishop, :queen, :king, :pawn]
+  PIECE_TYPES = %i[rook knight bishop queen king pawn].freeze
 
   def initialize
     @board = Board.new
   end
 
   def setup
-    print_intro_message
+    puts intro_message
     create_players
-    create_pieces(player1.color, player1)
-    create_pieces(player2.color, player2)
+    create_pieces(player1.color)
+    create_pieces(player2.color)
     @current_player = player1
     @castling_row = 7 if current_player.color == :white
     @castling_row = 0 if current_player.color == :black
@@ -26,7 +25,7 @@ class Game
     @player2 = Player.new(:black)
   end
 
-  def create_pieces(color, player)
+  def create_pieces(color)
     PIECE_TYPES.each { |piece_type| create_piece(piece_type, color) }
   end
 
@@ -145,7 +144,7 @@ class Game
     puts "#{current_player.color.capitalize}, select a piece to move (enter 'retry' to reselect):"
     user_input = gets.chomp.capitalize
     row, col = coordinates(user_input)
-    
+
     return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
     puts 'Please select your own piece!'
@@ -197,12 +196,12 @@ class Game
     king.is_castling = false
     return false unless chosen_piece == king
 
-    if (kingside_castle && king.destination.row == @castling_row &&
-      king.destination.col == 6)
+    if kingside_castle && king.destination.row == @castling_row &&
+       king.destination.col == 6
       @castling_kingside = true
       king.is_castling = true
-    elsif (queenside_castle && king.destination.row == @castling_row &&
-      king.destination.col == 2)
+    elsif queenside_castle && king.destination.row == @castling_row &&
+          king.destination.col == 2
       @castling_queenside = true
       king.is_castling = true
     end
@@ -211,8 +210,9 @@ class Game
   def kingside_castle
     return false unless r_rook && r_rook.moves_made.zero?
 
-    (board.square_at(@castling_row, 5).nil? && board.square_at(@castling_row, 6).nil?) &&
-    (!king_in_check?(@castling_row, 5) && !king_in_check?(@castling_row, 6))
+    (board.square_at(@castling_row, 5).nil? &&
+    board.square_at(@castling_row, 6).nil?) &&
+      (!king_in_check?(@castling_row, 5) && !king_in_check?(@castling_row, 6))
   end
 
   def queenside_castle
@@ -246,7 +246,7 @@ class Game
 
   def own_piece?(row, col)
     board.square_at(row, col) &&
-    board.square_at(row, col).color == current_player.color
+      board.square_at(row, col).color == current_player.color
   end
 
   def nil_or_opponent?(row, col)
@@ -266,12 +266,12 @@ class Game
     chosen_piece.update_position
   end
 
-  def print_intro_message
-    puts <<~INTRO
-Welcome to Chess!
-This is a two-player game. To give you an idea of how the grid positioning
-works, the bottom-left rook is located at A1. When asked to choose a piece
-to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
+  def intro_message
+    <<~INTRO
+      Welcome to Chess!
+      This is a two-player game. To give you an idea of how the grid positioning
+      works, the bottom-left rook is located at A1. When asked to choose a piece
+      to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
     INTRO
   end
 end
