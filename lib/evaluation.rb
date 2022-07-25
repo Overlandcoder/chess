@@ -28,9 +28,7 @@ class Evaluation
     @board_copy.place(move[0], move[1], current_piece)
   end
 
-  def king_in_check?
-    row = king.position.row
-    col = king.position.col
+  def king_in_check?(row = king.position.row, col = king.position.col)
     opponent_moves_list.any? { |opponent_move| opponent_move == [row, col] }
   end
 

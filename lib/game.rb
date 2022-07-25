@@ -16,6 +16,9 @@ class Game
     create_players
     create_pieces(player1.color, player1)
     create_pieces(player2.color, player2)
+    @current_player = player1
+    @castling_row = 7 if current_player.color == :white
+    @castling_row = 0 if current_player.color == :black
   end
 
   def create_players
@@ -39,7 +42,6 @@ class Game
 
   def play_game
     setup
-    @current_player = player1
     play_round until checkmate? || stalemate?
     conclusion
   end
@@ -180,15 +182,12 @@ class Game
     piece if piece.is_a?(Rook)
   end
 
-  def king_in_check?
-    Evaluation.new(board, current_player.color).king_in_check?
+  def king_in_check?(row = king.position.row, col = king.position.col)
+    Evaluation.new(board, current_player.color).king_in_check?(row, col)
   end
 
   def add_castling_moves
     return if king_in_check? || !king.moves_made.zero?
-
-    @castling_row = 7 if current_player.color == :white
-    @castling_row = 0 if current_player.color == :black
 
     king.possible_moves << [@castling_row, 6] if kingside_castle
     king.possible_moves << [@castling_row, 2] if queenside_castle
