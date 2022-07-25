@@ -41,19 +41,16 @@ class Evaluation
   end
 
   def opponent_moves_list
-    @board_copy = Marshal.load(Marshal.dump(board))
+    conditional_board = @board_copy ? @board_copy : board
     opponent_moves = []
-    (0..7).each do |row|
-      (0..7).each do |col|
-        opponent_piece = @board_copy.square_at(row, col)
-        next if opponent_piece.nil? || opponent_piece.color == @color
+    opponent_color = color == :white ? :black : :white
 
-        if opponent_piece.is_a?(Pawn)
-          opponent_moves << opponent_piece.capturing_moves_only
-        else
-          opponent_piece.generate_possible_moves(@board_copy, true)
-          opponent_moves << opponent_piece.possible_moves
-        end
+    board.pieces(opponent_color).each do |opponent_piece|
+      if opponent_piece.is_a?(Pawn)
+        opponent_moves << opponent_piece.capturing_moves_only
+      else
+        opponent_piece.generate_possible_moves(conditional_board, true)
+        opponent_moves << opponent_piece.possible_moves
       end
     end
     opponent_moves.flatten(1)
