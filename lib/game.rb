@@ -58,7 +58,7 @@ class Game
     piece_selection
     board.highlight_piece(chosen_piece.position)
     chosen_piece.generate_possible_moves(board)
-    add_castling_moves if chosen_piece.is_a?(King)
+    # add_castling_moves if chosen_piece.is_a?(King)
     board.highlight_possible_moves(chosen_piece.possible_moves)
     @destination = choose_destination
     can_castle?
@@ -169,27 +169,16 @@ class Game
 
   def r_rook
     piece = board.square_at(@castling_row, 7)
-    return nil if piece.nil?
-
     piece if piece.is_a?(Rook)
   end
 
   def l_rook
     piece = board.square_at(@castling_row, 0)
-    return nil if piece.nil?
-
     piece if piece.is_a?(Rook)
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
     Evaluation.new(board, current_player.color).king_in_check?(row, col)
-  end
-
-  def add_castling_moves
-    return if king_in_check? || !king.moves_made.zero?
-
-    king.possible_moves << [@castling_row, 6] if kingside_castle
-    king.possible_moves << [@castling_row, 2] if queenside_castle
   end
 
   def can_castle?
@@ -205,22 +194,6 @@ class Game
       @castling_queenside = true
       king.is_castling = true
     end
-  end
-
-  def kingside_castle
-    return false unless r_rook && r_rook.moves_made.zero?
-
-    (board.square_at(@castling_row, 5).nil? &&
-    board.square_at(@castling_row, 6).nil?) &&
-      (!king_in_check?(@castling_row, 5) && !king_in_check?(@castling_row, 6))
-  end
-
-  def queenside_castle
-    return false unless l_rook && l_rook.moves_made.zero?
-
-    (board.square_at(@castling_row, 3).nil? && board.square_at(@castling_row, 2).nil? &&
-    board.square_at(@castling_row, 1).nil?) && (!king_in_check?(@castling_row, 3) &&
-    !king_in_check?(@castling_row, 2) && !king_in_check?(@castling_row, 1))
   end
 
   def en_passant_capture
@@ -255,14 +228,14 @@ class Game
   end
 
   def update_board
-    board.place(Coordinate.new(row: @castling_row, col: 5), r_rook) if king.is_castling && @castling_kingside
-    board.place(Coordinate.new(row: @castling_row, col: 3), l_rook) if king.is_castling && @castling_queenside
+    board.place(Coordinate.new(row: @castling_row, col: 5), r_rook) if king.has_castled_kingside?(board)
+    board.place(Coordinate.new(row: @castling_row, col: 3), l_rook) if king.has_castled_queenside?(board)
     board.place(destination, chosen_piece)
   end
 
   def update_piece_position
-    r_rook.update_position(@castling_row, 5) if king.is_castling && @castling_kingside
-    l_rook.update_position(@castling_row, 3) if king.is_castling && @castling_queenside
+    r_rook.update_position(@castling_row, 5) if king.has_castled_kingside?
+    l_rook.update_position(@castling_row, 3) if king.has_castled_queenside?
     chosen_piece.update_position
   end
 

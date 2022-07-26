@@ -10,5 +10,7 @@ require_relative 'bishop'
 require_relative 'queen'
 require_relative 'king'
 require_relative 'pawn'
+require_relative 'kingside_castle'
+require_relative 'queenside_castle'
 
 Game.new.play_game
