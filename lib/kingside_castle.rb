@@ -1,8 +1,8 @@
 class KingsideCastle
-  attr_reader :board, :color, :king
+  attr_reader :board, :color
 
-  def initialize(board, color, king)
-    @board, @color, @king = board, color, king
+  def initialize(board, color)
+    @board, @color = board, color
     @castling_row = 7 if color == :white
     @castling_row = 0 if color == :black
   end
@@ -15,7 +15,6 @@ class KingsideCastle
 
   def rook
     piece = board.square_at(@castling_row, 7)
-    # can remove this eventually
     piece if piece.is_a?(Rook)
   end
 
