@@ -81,9 +81,9 @@ class Game
   end
 
   def make_move
-    # binding.pry if chosen_piece.is_a?(King) && chosen_piece.destination.col == 3
     reset_last_moved_pawn
     remove_opponent_piece
+    move_castling_rook if chosen_piece.is_a?(King) 
     update_board
     update_piece_position
     clear_old_position
@@ -126,8 +126,6 @@ class Game
 
   def clear_old_position
     board.place(piece_position, nil)
-    board.place(Coordinate.new(row: @castling_row, col: 7), nil) if king.is_castling_kingside
-    board.place(Coordinate.new(row: @castling_row, col: 0), nil) if king.is_castling_queenside
   end
 
   def opponent
@@ -211,26 +209,23 @@ class Game
   end
 
   def update_board
-    move_castling_rook if chosen_piece.is_a?(King)
     board.place(destination, chosen_piece)
   end
 
   def move_castling_rook
     if king.castling_kingside?(board)
       board.place(Coordinate.new(row: @castling_row, col: 5), r_rook)
+      r_rook.update_position(@castling_row, 5)
+      board.place(Coordinate.new(row: @castling_row, col: 7), nil)
     elsif king.castling_queenside?(board)
       board.place(Coordinate.new(row: @castling_row, col: 3), l_rook)
+      l_rook.update_position(@castling_row, 3)
+      board.place(Coordinate.new(row: @castling_row, col: 0), nil)
     end
   end
 
   def update_piece_position
-    update_castling_rook_position if chosen_piece.is_a?(King)
     chosen_piece.update_position
-  end
-
-  def update_castling_rook_position
-    r_rook.update_position(@castling_row, 5) if king.castling_kingside?(board)
-    l_rook.update_position(@castling_row, 3) if king.castling_queenside?(board)
   end
 
   def intro_message
