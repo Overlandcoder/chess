@@ -41,4 +41,84 @@ describe King do
       king.create_coordinate
     end
   end
+
+  describe '#generate_possible_moves' do
+    context 'when the next square contains own piece' do
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(7, 0) }
+
+      before do
+        king.generate_possible_moves(board)
+      end
+
+      it 'has no possible moves' do
+        expect(king.possible_moves.length).to eq(0)
+      end
+    end
+
+    context 'when an opponent one row up can be captured' do
+      fen_string = 'r3k1n1/4rq2/8/2b5/2K1Q3/8/8/2B2BNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(4, 2) }
+
+      before do
+        king.update_position(4, 2)
+        king.generate_possible_moves(board)
+      end
+
+      it 'can capture opponent piece' do
+        expect(king.possible_moves).to include([3, 2])
+      end
+
+      it 'has 5 possible moves in this scenario' do
+        expect(king.possible_moves.length).to eq(5)
+      end
+    end
+
+    context 'when moving the king may lead to check' do
+      fen_string = '4k1n1/4r3/8/2b5/r3Q3/3K4/1b5q/2B2BNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(5, 3) }
+
+      before do
+        king.update_position(5, 3)
+        king.generate_possible_moves(board)
+      end
+
+      it 'has no possible moves' do
+        expect(king.possible_moves.length).to eq(0)
+      end
+    end
+
+    context 'when king is in check' do
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/4R2q/5P2/PPPP2PP/RNBQKBN1'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(4, 4) }
+
+      before do
+        king.update_position(4, 4)
+        king.generate_possible_moves(board)
+      end
+
+      xit 'can only move to capture the piece putting king in check' do
+        expect(king.possible_moves.flatten).to eq([4, 7])
+      end
+    end
+
+    context 'when any move would put king in check' do
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(5, 6) }
+
+      before do
+        king.update_position(5, 6)
+        king.generate_possible_moves(board)
+      end
+
+      xit 'has no possible moves' do
+        expect(king.possible_moves.flatten.empty?).to be true
+      end
+    end
+  end
 end
