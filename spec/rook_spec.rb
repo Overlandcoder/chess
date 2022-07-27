@@ -48,26 +48,49 @@ describe Rook do
     context 'when the next square contains own piece' do
       fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
       let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(7, 0) }
+
+      before do
+        rook.generate_possible_moves(board)
+      end
 
       it 'cannot move onto own piece one row up' do
-        rook = board.square_at(7, 0)
-        expect(rook.possible_moves.include?([6, 0])).to be false
-        rook.generate_possible_moves(board)
+        expect(rook.possible_moves).not_to include([6, 0])
       end
 
       it 'cannot move onto own piece one column right' do
-        rook = board.square_at(7, 0)
-        expect(rook.possible_moves.include?([7, 1])).to be false
-        rook.generate_possible_moves(board)
-      end
-
-      it 'cannot move off the board one row down' do
-        rook = board.square_at(7, 0)
-        expect(rook.possible_moves.include?([8, 0])).to be false
-        rook.generate_possible_moves(board)
+        expect(rook.possible_moves).not_to include([7, 1])
       end
     end
 
-    context ''
+    context 'when an upward vertical path to an opponent piece is clear' do
+      fen_string = 'rnbqkbnr/pp1ppppp/8/8/p7/8/8/RNBQKBNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(7, 0) }
+
+      before do
+        rook.generate_possible_moves(board)
+      end
+
+      it 'can capture opponent piece' do
+        expect(rook.possible_moves).to include([4, 0])
+      end
+
+      it 'cannot jump to empty square past opponent piece' do
+        expect(rook.possible_moves).not_to include([3, 0])
+      end
+
+      it 'cannot jump to opponent piece behind first opponent piece' do
+        expect(rook.possible_moves).not_to include([0, 0])
+      end
+
+      it 'cannot move diagonally' do
+        expect(rook.possible_moves).not_to include([6, 1])
+      end
+
+      it 'can move to an empty square on the path' do
+        expect(rook.possible_moves).to include([5, 0])
+      end
+    end
   end
 end
