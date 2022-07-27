@@ -112,5 +112,54 @@ describe Rook do
         expect(rook.possible_moves).to include([4, 2])
       end
     end
+
+    context 'when moving a piece may lead to check' do
+      fen_string = 'rnb1kbnr/ppppqppp/8/8/1p2R3/8/8/1NBQKBNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(4, 4) }
+
+      before do
+        rook.update_position(4, 4)
+        rook.generate_possible_moves(board)
+      end
+
+      it 'cannot make a move that would lead to check' do
+        expect(rook.possible_moves).not_to include([4, 1])
+      end
+
+      it 'can capture opponent piece' do
+        expect(rook.possible_moves).to include([1, 4])
+      end
+    end
+
+    context 'when king is in check' do
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/4R2q/5P2/PPPP2PP/RNBQKBN1'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(4, 4) }
+
+      before do
+        rook.update_position(4, 4)
+        rook.generate_possible_moves(board)
+      end
+
+      it 'can only move to capture the piece putting king in check' do
+        expect(rook.possible_moves.flatten).to eq([4, 7])
+      end
+    end
+
+    context 'when any move would put king in check' do
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(5, 6) }
+
+      before do
+        rook.update_position(5, 6)
+        rook.generate_possible_moves(board)
+      end
+
+      it 'has no possible moves' do
+        expect(rook.possible_moves.flatten.empty?).to be true
+      end
+    end
   end
 end
