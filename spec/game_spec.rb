@@ -74,7 +74,8 @@ describe Game do
         allow(game).to receive(:current_player).and_return(player1)
         allow(game).to receive(:gets).and_return('H8', 'A1')
         allow(game).to receive(:board).and_return(board)
-        allow(game).to receive(:puts).with('Select a piece to move:')
+        allowed_message = "White, select a piece to move (enter 'retry' to reselect):"
+        allow(game).to receive(:puts).with(allowed_message)
       end
 
       it 'displays error message once' do
