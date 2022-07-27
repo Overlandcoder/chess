@@ -71,15 +71,15 @@ describe Game do
   end
 
   describe '#choose_destination' do
-    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:rook) { instance_double(Rook, color: :white, number: 0) }
 
     context 'when given a valid move' do
       before do
-        game.instance_variable_set(:@piece_to_move, rook)
+        game.instance_variable_set(:@chosen_piece, rook)
         allow(rook).to receive(:valid_move?).and_return(true)
         allow(game).to receive(:puts).with('Enter the position to move the piece to:')
         allow(game).to receive(:gets).and_return('a8')
-        allow(rook).to receive(:set_destination)
+        allow(rook).to receive(:destination=)
       end
 
       it 'stops loop and does not display error message' do
@@ -96,10 +96,10 @@ describe Game do
 
     context 'when given two invalid moves, then a valid move' do
       before do
-        game.instance_variable_set(:@piece_to_move, rook)
+        game.instance_variable_set(:@chosen_piece, rook)
         allow(rook).to receive(:valid_move?).and_return(false, false, true)
         allow(game).to receive(:gets).and_return('a2')
-        allow(rook).to receive(:set_destination)
+        allow(rook).to receive(:destination=)
       end
 
       it 'sends #new to Coordinate' do
