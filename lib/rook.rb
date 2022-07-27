@@ -2,8 +2,7 @@ class Rook < Piece
   POSSIBLE_MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]].freeze
 
   def initialize(color, number)
-    @color = color
-    @number = number
+    @color, @number = color, number
     create_coordinate
     @possible_moves = []
     @moves_made = 0

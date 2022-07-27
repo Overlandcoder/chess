@@ -2,8 +2,7 @@ class Bishop < Piece
   POSSIBLE_MOVES = [[-1, 1], [1, -1], [1, 1], [-1, -1]].freeze
 
   def initialize(color, number)
-    @color = color
-    @number = number
+    @color, @number = color, number
     create_coordinate
     @possible_moves = []
   end

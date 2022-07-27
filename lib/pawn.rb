@@ -1,7 +1,6 @@
 class Pawn < Piece
   def initialize(color, number)
-    @color = color
-    @number = number
+    @color, @number = color, number
     create_coordinate
     @possible_moves = []
     @moves_made = 0
@@ -34,7 +33,7 @@ class Pawn < Piece
   end
 
   def update_position(row = destination.row, col = destination.col)
-    two_square_move?
+    two_square_move? if destination
     position.update_row(row)
     position.update_col(col)
     @moves_made += 1

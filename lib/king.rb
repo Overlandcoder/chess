@@ -3,8 +3,7 @@ class King < Piece
                     [1, 1], [0, 1], [-1, 1], [-1, 0]].freeze
 
   def initialize(color, number)
-    @color = color
-    @number = number
+    @color, @number = color, number
     create_coordinate
     @possible_moves = []
     @moves_made = 0
@@ -33,18 +32,6 @@ class King < Piece
     @moves_made += 1
   end
 
-  def castling_kingside?(board)
-    return false unless destination.col == 6 && moves_made.zero?
-
-    KingsideCastle.new(board, color).possible?
-  end
-
-  def castling_queenside?(board)
-    return false unless destination.col == 3 && moves_made.zero?
-
-    QueensideCastle.new(board, color).possible?
-  end
-
   def generate_possible_moves(board, checking_for_check = false)
     @possible_moves.clear
 
@@ -70,6 +57,18 @@ class King < Piece
 
   def king_in_check?(board)
     Evaluation.new(board, color).king_in_check?
+  end
+
+  def castling_kingside?(board)
+    return false unless destination.col == 6 && moves_made.zero?
+
+    KingsideCastle.new(board, color).possible?
+  end
+
+  def castling_queenside?(board)
+    return false unless destination.col == 3 && moves_made.zero?
+
+    QueensideCastle.new(board, color).possible?
   end
 
   def add_kingside_castling_moves(board)
