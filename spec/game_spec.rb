@@ -1,23 +1,38 @@
-require_relative '../lib/game'
 require_relative '../lib/piece'
+require_relative '../lib/game'
+require_relative '../lib/rook'
 require_relative '../lib/player'
 require_relative '../lib/board'
 require_relative '../lib/coordinate'
 
 describe Game do
   subject(:game) { described_class.new }
-  let(:player1) { instance_double(Player, color: 'white') }
+  let(:player1) { instance_double(Player, color: :white) }
   let(:board) { instance_double(Board) }
 
-  describe '#create_player' do
-    before do
-      allow(game).to receive(:puts)
+  describe '#create_players' do
+    context 'check if white player is created properly' do
+      before do
+        allow(Player).to receive(:new).with(:black)
+      end
+
+      it 'creates white player with the right parameters' do
+        color = :white
+        expect(Player).to receive(:new).with(color)
+        game.create_players
+      end
     end
 
-    it 'creates a new player with the right parameters' do
-      color = 'white'
-      expect(Player).to receive(:new).with(color)
-      game.create_player('white')
+    context 'check if black player is created properly' do
+      before do
+        allow(Player).to receive(:new).with(:white)
+      end
+
+      it 'creates black player with the right parameters' do
+        color = :black
+        expect(Player).to receive(:new).with(color)
+        game.create_players
+      end
     end
   end
 
@@ -118,13 +133,16 @@ describe Game do
   end
 
   describe '#own_piece?' do
+    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+
     before do
       allow(game).to receive(:board).and_return(board)
       allow(game).to receive(:current_player).and_return(player1)
+      allow(board).to receive(:update_board).with(7, 0, rook)
     end
 
-    it 'sends #opponent_piece? to Board' do
-      expect(board).to receive(:opponent_piece?).with(7, 0, 'white')
+    it 'sends #square_at to Board' do
+      expect(board).to receive(:square_at).with(7, 0)
       game.own_piece?(7, 0)
     end
   end
