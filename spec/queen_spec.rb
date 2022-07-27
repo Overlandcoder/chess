@@ -134,18 +134,18 @@ describe Queen do
       end
     end
 
-    context 'when any move would put king in check' do
-      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1'
+    context 'when any move would leave king in check' do
+      fen_string = 'r3k1n1/4r3/8/2b1q3/4Q3/4K3/8/2B2BNR'
       let(:board) { Fen.new.to_board(fen_string) }
-      let(:queen) { board.square_at(5, 6) }
+      let(:queen) { board.square_at(4, 4) }
 
       before do
-        queen.update_position(5, 6)
+        queen.update_position(4, 4)
         queen.generate_possible_moves(board)
       end
 
       it 'has no possible moves' do
-        expect(queen.possible_moves.flatten.empty?).to be true
+        expect(queen.possible_moves.length).to eq(0)
       end
     end
   end
