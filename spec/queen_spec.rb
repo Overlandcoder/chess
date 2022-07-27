@@ -148,5 +148,20 @@ describe Queen do
         expect(queen.possible_moves.length).to eq(0)
       end
     end
+
+    context 'when queen has king in check but king can escape' do
+      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:queen) { board.square_at(6, 3) }
+
+      before do
+        queen.update_position(6, 3)
+        queen.generate_possible_moves(board)
+      end
+
+      it 'cannot move to the safe square that king can escape to' do
+        expect(queen.possible_moves).not_to include([4, 2])
+      end
+  end
   end
 end

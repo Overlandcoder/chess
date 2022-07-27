@@ -91,18 +91,18 @@ describe King do
       end
     end
 
-    context 'when king is in check' do
-      fen_string = 'rnb1kbnr/pppp1ppp/8/8/4R2q/5P2/PPPP2PP/RNBQKBN1'
+    context 'when king is in check and moving to empty square is safe' do
+      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
       let(:board) { Fen.new.to_board(fen_string) }
-      let(:king) { board.square_at(4, 4) }
+      let(:king) { board.square_at(5, 3) }
 
       before do
-        king.update_position(4, 4)
+        king.update_position(5, 3)
         king.generate_possible_moves(board)
       end
 
-      xit 'can only move to capture the piece putting king in check' do
-        expect(king.possible_moves.flatten).to eq([4, 7])
+      it 'can move only move to squares one row above' do
+        expect(king.possible_moves).to include([4, 2])
       end
     end
 
@@ -120,5 +120,20 @@ describe King do
         expect(king.possible_moves.flatten.empty?).to be true
       end
     end
+
+    context 'when opposing king in check but it can escape' do
+      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(0, 4) }
+
+      before do
+        king.update_position(0, 4)
+        king.generate_possible_moves(board)
+      end
+
+      it 'cannot move to the safe square that king can escape to' do
+        expect(king.possible_moves).not_to include([4, 2])
+      end
+  end
   end
 end

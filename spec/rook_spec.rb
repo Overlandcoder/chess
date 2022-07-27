@@ -1,14 +1,11 @@
 require_relative '../lib/piece'
 require_relative '../lib/rook'
 require_relative '../lib/board'
-require_relative '../lib/game'
 require_relative '../lib/coordinate'
 require_relative '../lib/fen'
 require_relative '../lib/evaluation'
 
 describe Rook do
-  let(:game) { instance_double(Game) }
-
   describe '#update_position' do
     subject(:rook) { described_class.new(:white, 0) }
     let(:position) { instance_double(Coordinate, row: 7, col: 0) }
@@ -160,6 +157,21 @@ describe Rook do
       it 'has no possible moves' do
         expect(rook.possible_moves.flatten.empty?).to be true
       end
+    end
+
+    context 'when rook has king in check but king can escape' do
+        fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+        let(:board) { Fen.new.to_board(fen_string) }
+        let(:rook) { board.square_at(5, 1) }
+  
+        before do
+          rook.update_position(5, 1)
+          rook.generate_possible_moves(board)
+        end
+  
+        it 'cannot move to the safe square that king can escape to' do
+          expect(rook.possible_moves).not_to include([4, 2])
+        end
     end
   end
 end
