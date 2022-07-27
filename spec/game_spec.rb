@@ -1,6 +1,7 @@
 require_relative '../lib/piece'
 require_relative '../lib/game'
 require_relative '../lib/rook'
+require_relative '../lib/bishop'
 require_relative '../lib/player'
 require_relative '../lib/board'
 require_relative '../lib/coordinate'
@@ -134,26 +135,27 @@ describe Game do
   end
 
   describe '#update_board' do
-    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
-    let(:destination) { instance_double(Coordinate, row: 0, col: 0) }
+    let(:bishop) { instance_double(Bishop, color: :black, number: 1) }
+    let(:board) { instance_double(Board) }
+    let(:destination) { instance_double(Coordinate, row: 5, col: 0) }
 
     before do
+      allow(game).to receive(:chosen_piece).and_return(bishop)
       allow(game).to receive(:destination).and_return(destination)
       allow(game).to receive(:board).and_return(board)
-      allow(game).to receive(:piece_to_move).and_return(rook)
     end
 
-    it 'sends #update_board to Board' do
-      expect(board).to receive(:update_board).with(0, 0, rook)
+    it 'sends #place to Board' do
+      expect(board).to receive(:place).with(destination, bishop)
       game.update_board
     end
   end
 
   describe '#update_piece_position' do
-    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:rook) { instance_double(Rook, color: :white, number: 0) }
 
     before do
-      allow(game).to receive(:piece_to_move).and_return(rook)
+      allow(game).to receive(:chosen_piece).and_return(rook)
     end
 
     it 'sends #update_position to Rook' do
