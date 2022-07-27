@@ -118,12 +118,13 @@ describe Game do
   end
 
   describe '#own_piece?' do
-    let(:rook) { instance_double(Rook, color: 'white', number: 0, board: board) }
+    let(:rook) { instance_double(Rook, color: :white, number: 0) }
+    let(:coordinate) { instance_double(Coordinate, row: 7, col: 0) }
 
     before do
       allow(game).to receive(:board).and_return(board)
       allow(game).to receive(:current_player).and_return(player1)
-      allow(board).to receive(:update_board).with(7, 0, rook)
+      allow(board).to receive(:place).with(coordinate, rook)
     end
 
     it 'sends #square_at to Board' do
