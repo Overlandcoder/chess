@@ -1,13 +1,15 @@
+require_relative '../lib/piece'
 require_relative '../lib/rook'
 require_relative '../lib/board'
 require_relative '../lib/game'
 require_relative '../lib/coordinate'
+require_relative '../lib/fen'
+require_relative '../lib/evaluation'
 
 describe Rook do
-  subject(:rook) { described_class.new(:white, 0, board) }
+  subject(:rook) { described_class.new(:white, 0) }
 
   let(:game) { instance_double(Game) }
-  let(:board) { instance_double(Board) }
 
   describe '#update_position' do
     let(:position) { instance_double(Coordinate, row: 7, col: 0) }
@@ -44,31 +46,28 @@ describe Rook do
 
   describe '#generate_possible_moves' do
     context 'when the next square contains own piece' do
-      let(:position) { instance_double(Coordinate, row: 4, col: 4) }
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      let(:board) { Fen.new.to_board(fen_string) }
 
       it 'cannot move onto own piece one row up' do
-        allow(board).to receive(:nil_or_opponent?).and_return(false)
-        expect(rook.possible_moves.include?([3, 4])).to be false
-        rook.generate_possible_moves
+        rook = board.square_at(7, 0)
+        expect(rook.possible_moves.include?([6, 0])).to be false
+        rook.generate_possible_moves(board)
       end
 
       it 'cannot move onto own piece one column right' do
-        allow(board).to receive(:nil_or_opponent?).and_return(false)
-        expect(rook.possible_moves.include?([4, 5])).to be false
-        rook.generate_possible_moves
+        rook = board.square_at(7, 0)
+        expect(rook.possible_moves.include?([7, 1])).to be false
+        rook.generate_possible_moves(board)
       end
 
-      it 'cannot move onto own piece one row down' do
-        allow(board).to receive(:nil_or_opponent?).and_return(false)
-        expect(rook.possible_moves.include?([5, 4])).to be false
-        rook.generate_possible_moves
-      end
-
-      it 'cannot move onto own piece one column left' do
-        allow(board).to receive(:nil_or_opponent?).and_return(false)
-        expect(rook.possible_moves.include?([4, 3])).to be false
-        rook.generate_possible_moves
+      it 'cannot move off the board one row down' do
+        rook = board.square_at(7, 0)
+        expect(rook.possible_moves.include?([8, 0])).to be false
+        rook.generate_possible_moves(board)
       end
     end
+
+    context ''
   end
 end
