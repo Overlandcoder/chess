@@ -83,5 +83,35 @@ describe Knight do
         expect(knight.possible_moves.length).to eq(8)
       end
     end
+
+    context 'when king is in check and path to king can be blocked' do
+      fen_string = 'r1bqkbnr/pp5p/3n2B1/8/8/8/2PPPPP1/RNB1K1NR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:knight) { board.square_at(2, 3) }
+
+      before do
+        knight.update_position(2, 3)
+        knight.generate_possible_moves(board)
+      end
+
+      it 'can only move to block path to king and remove check' do
+        expect(knight.possible_moves).to eq([[1, 5]])
+      end
+    end
+
+    context 'when all possible move squares are occupied by own pieces' do
+      fen_string = '2bqkb2/1p3p2/3n4/1n3p2/2r1r1B1/8/2PPPPP1/RNB1K1NR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:knight) { board.square_at(2, 3) }
+
+      before do
+        knight.update_position(2, 3)
+        knight.generate_possible_moves(board)
+      end
+
+      it 'has no possible moves' do
+        expect(knight.possible_moves.length).to eq(0)
+      end
+    end
   end
 end
