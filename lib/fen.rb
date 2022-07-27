@@ -13,7 +13,9 @@ class Fen
     expanded_rows(fen_string).each_with_index do |row, row_number|
       row.each_with_index do |char, col_number|
         coordinate = Coordinate.new(row: row_number, col: col_number)
-        board.place(coordinate, piece_from_fen_char(char))
+        piece = piece_from_fen_char(char)
+        piece.update_position(row_number, col_number) if piece
+        board.place(coordinate, piece)
       end
     end
     board
