@@ -45,7 +45,7 @@ class King < Piece
       @possible_moves << [row, col]
     end
     add_castling_moves(board) unless checking_for_check
-    Evaluation.new(board, color).remove_check_moves(self) unless checking_for_check
+    Evaluation.new(board, color).remove_king_checks unless checking_for_check
   end
 
   def add_castling_moves(board)
