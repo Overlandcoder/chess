@@ -7,11 +7,10 @@ require_relative '../lib/fen'
 require_relative '../lib/evaluation'
 
 describe Rook do
-  subject(:rook) { described_class.new(:white, 0) }
-
   let(:game) { instance_double(Game) }
 
   describe '#update_position' do
+    subject(:rook) { described_class.new(:white, 0) }
     let(:position) { instance_double(Coordinate, row: 7, col: 0) }
     let(:destination) { instance_double(Coordinate, row: 2, col: 0) }
 
@@ -34,6 +33,8 @@ describe Rook do
   end
 
   describe '#create_coordinate' do
+    subject(:rook) { described_class.new(:white, 0) }
+
     before do
       allow(rook).to receive(:number).and_return(0)
     end
@@ -90,6 +91,25 @@ describe Rook do
 
       it 'can move to an empty square on the path' do
         expect(rook.possible_moves).to include([5, 0])
+      end
+    end
+
+    context 'when a leftward horizontal path to an opponent piece is clear' do
+      fen_string = 'rnbqkbnr/pp1ppppp/8/8/1p1R4/8/8/1NBQKBNR'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:rook) { board.square_at(4, 3) }
+
+      before do
+        rook.update_position(4, 3)
+        rook.generate_possible_moves(board)
+      end
+
+      it 'can capture opponent piece' do
+        expect(rook.possible_moves).to include([4, 1])
+      end
+
+      it 'can move to an empty square on the path' do
+        expect(rook.possible_moves).to include([4, 2])
       end
     end
   end
