@@ -43,7 +43,7 @@ describe King do
   end
 
   describe '#generate_possible_moves' do
-    context 'when the next square contains own piece' do
+    context 'when surrounded by own pieces' do
       fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:king) { board.square_at(7, 0) }
@@ -71,8 +71,8 @@ describe King do
         expect(king.possible_moves).to include([3, 2])
       end
 
-      it 'has 5 possible moves in this scenario' do
-        expect(king.possible_moves.length).to eq(5)
+      it 'has 4 possible moves in this scenario' do
+        expect(king.possible_moves.length).to eq(4)
       end
     end
 
@@ -106,34 +106,54 @@ describe King do
       end
     end
 
-    context 'when any move would put king in check' do
-      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1'
+    context 'custom scenario' do
+      fen_string = '4k1n1/4r3/5K2/2b5/r3Q3/8/1b5q/2B2BNR'
       let(:board) { Fen.new.to_board(fen_string) }
-      let(:king) { board.square_at(5, 6) }
+      let(:king) { board.square_at(2, 5) }
 
       before do
-        king.update_position(5, 6)
+        king.update_position(2, 5)
         king.generate_possible_moves(board)
       end
 
-      xit 'has no possible moves' do
-        expect(king.possible_moves.flatten.empty?).to be true
+      it 'has 3 possible moves in this scenario' do
+        expect(king.possible_moves.length).to eq(3)
       end
     end
 
-    context 'when opposing king in check but it can escape' do
-      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+    context 'when capturing a piece would lead to check by opposing king' do
+      fen_string = '4k3/4r3/5K2/2b5/r3Q3/8/1b5q/2B2BNR'
       let(:board) { Fen.new.to_board(fen_string) }
-      let(:king) { board.square_at(0, 4) }
+      let(:king) { board.square_at(2, 5) }
 
       before do
-        king.update_position(0, 4)
+        king.update_position(2, 5)
         king.generate_possible_moves(board)
       end
 
-      it 'cannot move to the safe square that king can escape to' do
-        expect(king.possible_moves).not_to include([4, 2])
+      it 'cannot capture the piece because it would lead to check' do
+        expect(king.possible_moves).not_to include([1, 4])
       end
-  end
+
+      it 'has 3 possible moves in this scenario' do
+        expect(king.possible_moves.length).to eq(3)
+      end
+    end
+
+    context 'when king is in check by queen, and that queen is pinned to its king' do
+      fen_string = '3K4/7N/r5B1/8/8/3qb3/2k5/8'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:king) { board.square_at(0, 3) }
+
+      before do
+        king.update_position(0, 3)
+        king.generate_possible_moves(board)
+      end
+
+      it 'must escape check by moving to safe squares' do
+        moves = [[0, 2], [1, 2], [0, 4], [1, 4]]
+        expect(king.possible_moves.sort).to eq(moves.sort)
+      end
+    end
   end
 end
