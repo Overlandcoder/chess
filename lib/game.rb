@@ -41,6 +41,7 @@ class Game
 
   def play_game
     setup
+    # @board = Fen.new.to_board('4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR')
     play_round until checkmate? || stalemate?
     conclusion
   end
@@ -212,6 +213,10 @@ class Game
     board.place(destination, chosen_piece)
   end
 
+  def update_piece_position
+    chosen_piece.update_position
+  end
+
   def move_castling_rook
     if king.castling_kingside?(board)
       board.place(Coordinate.new(row: @castling_row, col: 5), r_rook)
@@ -222,10 +227,6 @@ class Game
       l_rook.update_position(@castling_row, 3)
       board.place(Coordinate.new(row: @castling_row, col: 0), nil)
     end
-  end
-
-  def update_piece_position
-    chosen_piece.update_position
   end
 
   def intro_message
