@@ -11,7 +11,6 @@ class Evaluation
     moves_to_delete = []
 
     current_piece.possible_moves.each do |move|
-      @board_copy = Marshal.load(Marshal.dump(board))
       simulate_move(current_row, current_col, move, current_piece)
       moves_to_delete << move if king_in_check?
     end
@@ -23,6 +22,7 @@ class Evaluation
   end
 
   def simulate_move(row, col, move, current_piece)
+    @board_copy = Marshal.load(Marshal.dump(board))
     @board_copy.place(Coordinate.new(row: row, col: col), nil)
     @board_copy.place(Coordinate.new(row: move[0], col: move[1]), current_piece)
   end
@@ -32,9 +32,10 @@ class Evaluation
   end
 
   def remove_king_checks
-    king.possible_moves.delete_if { |king_move|
-      opponent_moves_list.include?(king_move)
-    }
+    king.possible_moves.delete_if do |king_move|
+      simulate_move(king.position.row, king.position.col, king_move, self)
+      king_in_check?(king_move[0], king_move[1])
+    end
   end
 
   def opponent_moves_list
