@@ -69,8 +69,8 @@ class Fen
   def current_player(fen_string)
     expanded_rows(fen_string).each_with_index do |row, row_number|
       next unless row_number == 7
-      @current_player = :white if row.include?('w')
-      @current_player = :black if row.include?('b')
+      return :white if row.include?('w')
+      return :black if row.include?('b')
     end
   end
 end
