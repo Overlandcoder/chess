@@ -26,6 +26,7 @@ class Pawn < Piece
   def create_coordinate
     start_col = [0, 1, 2, 3, 4, 5, 6, 7][number]
     @position = Coordinate.new(row: start_row, col: start_col)
+    @start_position = [start_row, start_col]
   end
 
   def valid_move?
@@ -36,7 +37,6 @@ class Pawn < Piece
     two_square_move? if destination
     position.update_row(row)
     position.update_col(col)
-    @moves_made += 1
   end
 
   def generate_possible_moves(board, checking_for_check = false)
@@ -56,6 +56,7 @@ class Pawn < Piece
   end
 
   def add_two_square_move
+    @moves_made += count_moves_made
     return unless moves_made.zero?
 
     row = position.row + regular_move[0]
@@ -65,6 +66,10 @@ class Pawn < Piece
     row = position.row + two_square_move[0]
     col = position.col + two_square_move[1]
     @possible_moves << [row, col] if board.square_at(row, col).nil?
+  end
+
+  def count_moves_made
+    @start_position == [position.row, position.col] ? 0 : 1
   end
 
   def capturing_moves(removing_king_checks = false)
