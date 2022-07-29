@@ -19,8 +19,6 @@ class Game
     create_pieces(player1.color)
     create_pieces(player2.color)
     @current_player = player1
-    @castling_row = 7 if current_player.color == :white
-    @castling_row = 0 if current_player.color == :black
   end
 
   def create_players
@@ -44,7 +42,7 @@ class Game
 
   def play_game
     setup unless @playing_saved_game
-    @board = Fen.new.to_board('rnbqkbnr/4pppp/pppp4/8/6P1/5P1N/PPPPP1BP/RNBQK2R w')
+    # @board = Fen.new.to_board('rnbqkbnr/4pppp/pppp4/8/6P1/5P1N/PPPPP1BP/RNBQK2R w')
     play_rounds
     conclusion
   end
@@ -169,18 +167,30 @@ class Game
     choose_destination
   end
 
-  def king
-    board.pieces(current_player.color).find { |piece| piece.is_a?(King) }
+  def king(color = current_player.color)
+    board.pieces(color).find { |piece| piece.is_a?(King) }
   end
 
-  def r_rook
-    piece = board.square_at(@castling_row, 7)
+  def kings
+    [king(:white), king(:black)]
+  end
+
+  def rooks
+    [l_rook(:white), r_rook(:white), l_rook(:black), r_rook(:black)]
+  end
+
+  def r_rook(color)
+    piece = board.square_at(castling_row(color), 7)
     piece if piece.is_a?(Rook)
   end
 
-  def l_rook
-    piece = board.square_at(@castling_row, 0)
+  def l_rook(color)
+    piece = board.square_at(castling_row(color), 0)
     piece if piece.is_a?(Rook)
+  end
+
+  def castling_row(color)
+    color == :white ? 7 : 0
   end
 
   def king_in_check?(row = king.position.row, col = king.position.col)
@@ -226,15 +236,15 @@ class Game
     chosen_piece.update_position
   end
 
-  def move_castling_rook
+  def move_castling_rook(color = current_player.color)
     if king.castling_kingside?(board)
-      board.place(Coordinate.new(row: @castling_row, col: 5), r_rook)
-      r_rook.update_position(@castling_row, 5)
-      board.place(Coordinate.new(row: @castling_row, col: 7), nil)
+      board.place(Coordinate.new(row: castling_row(color), col: 5), r_rook(color))
+      r_rook(color).update_position(castling_row(color), 5)
+      board.place(Coordinate.new(row: castling_row(color), col: 7), nil)
     elsif king.castling_queenside?(board)
-      board.place(Coordinate.new(row: @castling_row, col: 3), l_rook)
-      l_rook.update_position(@castling_row, 3)
-      board.place(Coordinate.new(row: @castling_row, col: 0), nil)
+      board.place(Coordinate.new(row: castling_row(color), col: 3), l_rook(color))
+      l_rook(color).update_position(castling_row(color), 3)
+      board.place(Coordinate.new(row: castling_row(color), col: 0), nil)
     end
   end
 
@@ -266,7 +276,7 @@ class Game
   def save_game
     puts "Enter a name to save your game file as:"
     @fname = gets.chomp
-    fen_string = BoardToFen.new(board, @current_player).convert
+    fen_string = BoardToFen.new(board, @current_player, kings, rooks).convert
     yaml = YAML::dump(fen_string)
     saved = File.new("saved/#{@fname}.yaml", "w")
     saved.write(yaml)
@@ -285,6 +295,7 @@ class Game
     saved_game_fen_string = YAML.load(File.read("saved/#{game}"))
     @board = Fen.new.to_board(saved_game_fen_string)
     assign_current_player(saved_game_fen_string)
+    assign_castling_rights(saved_game_fen_string)
     @playing_saved_game = true
     play_game
   end
@@ -293,5 +304,18 @@ class Game
     saved_color = Fen.new.current_player(fen_string)
     create_players
     @current_player = saved_color == :white ? @player1 : @player2
+  end
+
+  def assign_castling_rights(fen_string)
+    castling_string = Fen.new.castling_rights(fen_string)
+    p castling_string
+    king(:white).can_castle = castling_string.include?('K') ? true : false
+    king(:white).can_castle = castling_string.include?('Q') ? true : false
+    r_rook(:white).can_castle = castling_string.include?('K') ? true : false
+    r_rook(:black).can_castle = castling_string.include?('k') ? true : false
+    king(:black).can_castle = castling_string.include?('k') ? true : false
+    king(:black).can_castle = castling_string.include?('q') ? true : false
+    l_rook(:white).can_castle = castling_string.include?('Q') ? true : false
+    l_rook(:black).can_castle = castling_string.include?('q') ? true : false
   end
 end
