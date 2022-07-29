@@ -116,5 +116,20 @@ describe Pawn do
         expect(pawn.possible_moves.length).to eq(0)
       end
     end
+
+    context 'when en passant capture is possible but king is in check' do
+      fen_string = 'rnb1kbnr/3ppppp/4q3/Pp6/2K5/8/1PPPPPPP/RNB2BNR w'
+      let(:board) { Fen.new.to_board(fen_string) }
+      let(:white_pawn) { board.square_at(3, 0) }
+
+      before do
+        white_pawn.update_position(3, 0)
+        white_pawn.generate_possible_moves(board)
+      end
+
+      it 'has no possible moves' do
+        expect(white_pawn.possible_moves.length).to eq(0)
+      end
+    end
   end
 end
