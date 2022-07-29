@@ -1,8 +1,8 @@
 class Piece
-  attr_reader :color, :number, :position, :board, :moves_made,
-              :moved_two_squares
+  attr_reader :color, :number, :position, :board, :moved_two_squares, :can_castle
 
-  attr_accessor :possible_moves, :destination, :capturing_en_passant, :moved_last
+  attr_accessor :possible_moves, :destination, :capturing_en_passant,
+                :moved_last, :moves_made
 
   def self.for(piece_type, color, number)
     case piece_type
