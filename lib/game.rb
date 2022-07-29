@@ -1,3 +1,4 @@
+require 'yaml'
 require 'pry-byebug'
 
 class Game
@@ -12,6 +13,7 @@ class Game
 
   def setup
     puts intro_message
+    choose_new_or_saved_game
     create_players
     create_pieces(player1.color)
     create_pieces(player2.color)
@@ -42,7 +44,7 @@ class Game
   def play_game
     setup
     # @board = Fen.new.to_board('4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR')
-    play_round until checkmate? || stalemate?
+    play_rounds
     conclusion
   end
 
@@ -54,17 +56,20 @@ class Game
     Evaluation.new(board, current_player.color).stalemate?
   end
 
-  def play_round
-    board.display
-    piece_selection
-    board.highlight_piece(chosen_piece.position)
-    chosen_piece.generate_possible_moves(board)
-    board.highlight_possible_moves(chosen_piece.possible_moves)
-    @destination = choose_destination
-    en_passant_capture
-    make_move
-    promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
-    @current_player = opponent
+  def play_rounds
+    until checkmate? || stalemate?
+      board.display
+      piece_selection
+      break if @piece_position == 'save'
+      board.highlight_piece(chosen_piece.position)
+      chosen_piece.generate_possible_moves(board)
+      board.highlight_possible_moves(chosen_piece.possible_moves)
+      @destination = choose_destination
+      en_passant_capture
+      make_move
+      promote_pawn if chosen_piece.is_a?(Pawn) && chosen_piece.can_be_promoted?
+      @current_player = opponent
+    end
   end
 
   def conclusion
@@ -136,8 +141,9 @@ class Game
   def choose_piece
     puts "#{current_player.color.capitalize}, select a piece to move (enter 'retry' to reselect):"
     user_input = gets.chomp.capitalize
-    row, col = coordinates(user_input)
+    return save_game if user_input == 'Save'
 
+    row, col = coordinates(user_input)
     return Coordinate.new(row: row, col: col) if own_piece?(row, col)
 
     puts 'Please select your own piece!'
@@ -234,7 +240,33 @@ class Game
       Welcome to Chess!
       This is a two-player game. To give you an idea of how the grid positioning
       works, the bottom-left rook is located at A1. When asked to choose a piece
-      to move, enter A1 or a1 for that rook, for example. Good luck and have fun!
+      to move, enter A1 or a1 for that rook, for example.
     INTRO
+  end
+
+  def choose_new_or_saved_game
+    puts "\nEnter 'new' to start a new game or 'saved' to play a saved game:"
+    choice = gets.chomp.downcase
+    play_new_or_saved_game(choice)
+  end
+
+  def play_new_or_saved_game(choice)
+    if choice == 'new'
+      puts "\n\u001b[42m"
+      puts "\n\u001b[42m A new game will now begin. Good luck and have fun! \n\u001b[0m\n\n"
+    elsif choice == 'saved'
+
+    end
+  end
+
+  def save_game
+    puts "Enter a name to save your game file as:"
+    @fname = gets.chomp
+    fen_string = BoardToFen.new(board, @current_player).convert
+    yaml = YAML::dump(fen_string)
+    saved = File.new("../saved/#{@fname}.yaml", "w")
+    saved.write(yaml)
+    puts "Game saved."
+    'save'
   end
 end
