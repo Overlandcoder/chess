@@ -1,6 +1,6 @@
 class BoardToFen
-  def initialize(board, active_player)
-    @board, @active_player = board, active_player
+  def initialize(board, current_player)
+    @board, @current_player = board, current_player
   end
 
   def convert
@@ -10,10 +10,9 @@ class BoardToFen
         square = @board.square_at(row_number, col_number)
         square_to_fen(square)
         @fen_string += '/' if col_number == 7 && row_number < 7
-        p @fen_string
       end
     end
-    @fen_string += active_player_to_fen
+    @fen_string += current_player_to_fen
     @fen_string
   end
 
@@ -44,7 +43,7 @@ class BoardToFen
     end
   end
 
-  def active_player_to_fen
-    @active_player.color == :white ? ' w' : ' b'
+  def current_player_to_fen
+    @current_player.color == :white ? ' w' : ' b'
   end
 end
