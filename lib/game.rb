@@ -9,6 +9,7 @@ class Game
 
   def initialize
     @board = Board.new
+    @playing_saved_game = false
   end
 
   def setup
@@ -42,8 +43,8 @@ class Game
   end
 
   def play_game
-    setup
-    # @board = Fen.new.to_board('4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR')
+    setup unless @playing_saved_game
+    @board = Fen.new.to_board('rnbqkbnr/4pppp/pppp4/8/6P1/5P1N/PPPPP1BP/RNBQK2R w')
     play_rounds
     conclusion
   end
@@ -120,6 +121,7 @@ class Game
   end
 
   def piece_selection
+    # rename piece_position or maybe remove it altogether later
     @piece_position = choose_piece
     return if @piece_position == 'save'
     @chosen_piece = board.square_at(piece_position.row, piece_position.col)
@@ -256,7 +258,8 @@ class Game
       puts "\n\u001b[42m"
       puts "\n\u001b[42m A new game will now begin. Good luck and have fun! \n\u001b[0m\n\n"
     elsif choice == 'saved'
-
+      saved_game = choose_saved_game
+      play_saved_game(saved_game)
     end
   end
 
@@ -269,5 +272,26 @@ class Game
     saved.write(yaml)
     puts "Game saved."
     'save'
+  end
+
+  def choose_saved_game
+    puts "\nList of saved games:"
+    puts Dir["saved/*"]
+    puts "\nEnter the name of the saved game you wish to play:"
+    gets.chomp
+  end
+
+  def play_saved_game(game)
+    saved_game_fen_string = YAML.load(File.read("saved/#{game}"))
+    @board = Fen.new.to_board(saved_game_fen_string)
+    assign_current_player(saved_game_fen_string)
+    @playing_saved_game = true
+    play_game
+  end
+
+  def assign_current_player(fen_string)
+    saved_color = Fen.new.current_player(fen_string)
+    create_players
+    @current_player = saved_color == :white ? @player1 : @player2
   end
 end
