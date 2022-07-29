@@ -44,7 +44,7 @@ describe Rook do
 
   describe '#generate_possible_moves' do
     context 'when the next square contains own piece' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(7, 0) }
 
@@ -62,7 +62,7 @@ describe Rook do
     end
 
     context 'when an upward vertical path to an opponent piece is clear' do
-      fen_string = 'rnbqkbnr/pp1ppppp/8/8/p7/8/8/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pp1ppppp/8/8/p7/8/8/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(7, 0) }
 
@@ -92,7 +92,7 @@ describe Rook do
     end
 
     context 'when a leftward horizontal path to an opponent piece is clear' do
-      fen_string = 'rnbqkbnr/pp1ppppp/8/8/1p1R4/8/8/1NBQKBNR'
+      fen_string = 'rnbqkbnr/pp1ppppp/8/8/1p1R4/8/8/1NBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(4, 3) }
 
@@ -111,7 +111,7 @@ describe Rook do
     end
 
     context 'when moving a piece may lead to check' do
-      fen_string = 'rnb1kbnr/ppppqppp/8/8/1p2R3/8/8/1NBQKBNR'
+      fen_string = 'rnb1kbnr/ppppqppp/8/8/1p2R3/8/8/1NBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(4, 4) }
 
@@ -130,7 +130,7 @@ describe Rook do
     end
 
     context 'when king is in check' do
-      fen_string = 'rnb1kbnr/pppp1ppp/8/8/4R2q/5P2/PPPP2PP/RNBQKBN1'
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/4R2q/5P2/PPPP2PP/RNBQKBN1 w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(4, 4) }
 
@@ -145,7 +145,7 @@ describe Rook do
     end
 
     context 'when any move would put king in check' do
-      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1'
+      fen_string = 'rnb1kbnr/pppp1ppp/8/8/7q/5PR1/PPPP2PP/RNBQKBN1 w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:rook) { board.square_at(5, 6) }
 
@@ -160,7 +160,7 @@ describe Rook do
     end
 
     context 'when rook has king in check but king can escape' do
-        fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+        fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR w'
         let(:board) { Fen.new.to_board(fen_string) }
         let(:rook) { board.square_at(5, 1) }
   
