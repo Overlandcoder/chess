@@ -11,9 +11,10 @@ class Fen
   def to_board(fen_string)
     @board = Board.new
     expanded_rows(fen_string).each_with_index do |row, row_number|
+      row = row[0..-3] if row_number == 7
       row.each_with_index do |char, col_number|
         coordinate = Coordinate.new(row: row_number, col: col_number)
-        piece = piece_from_fen_char(char)
+        piece = piece_from_fen_char(char, col_number)
         piece.update_position(row_number, col_number) if piece
         board.place(coordinate, piece)
       end
@@ -34,12 +35,14 @@ class Fen
     end
   end
 
-  def piece_from_fen_char(char)
+  def piece_from_fen_char(char, col_number)
     case char
     when 'R'
-      Piece.for(:rook, :white, 0)
+      col_number = 1 if col_number > 0
+      Piece.for(:rook, :white, col_number)
     when 'r'
-      Piece.for(:rook, :black, 0)
+      col_number = 1 if col_number > 0
+      Piece.for(:rook, :black, col_number)
     when 'N'
       Piece.for(:knight, :white, 0)
     when 'n'
@@ -57,9 +60,17 @@ class Fen
     when 'k'
       Piece.for(:king, :black, 0)
     when 'P'
-      Piece.for(:pawn, :white, 0)
+      Piece.for(:pawn, :white, col_number)
     when 'p'
-      Piece.for(:pawn, :black, 0)
+      Piece.for(:pawn, :black, col_number)
+    end
+  end
+
+  def current_player(fen_string)
+    expanded_rows(fen_string).each_with_index do |row, row_number|
+      next unless row_number == 7
+      @current_player = :white if row.include?('w')
+      @current_player = :black if row.include?('b')
     end
   end
 end
