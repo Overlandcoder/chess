@@ -46,7 +46,7 @@ describe Bishop do
 
   describe '#generate_possible_moves' do
     context 'when surrounded by own pieces' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:bishop) { board.square_at(0, 5) }
 
@@ -60,7 +60,7 @@ describe Bishop do
     end
 
     context 'when path to opponent piece is empty' do
-      fen_string = 'rnbqk1nr/pppppppp/8/6b1/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqk1nr/pppppppp/8/6b1/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:bishop) { board.square_at(3, 6) }
 
@@ -86,7 +86,7 @@ describe Bishop do
     end
 
     context 'when king is in check and path to king can be blocked' do
-      fen_string = 'rnbqk1nr/pppp1ppp/3p4/6b1/8/1PP5/PPP1QPPP/RNB1KBNR'
+      fen_string = 'rnbqk1nr/pppp1ppp/3p4/6b1/8/1PP5/PPP1QPPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:bishop) { board.square_at(3, 6) }
 
@@ -101,7 +101,7 @@ describe Bishop do
     end
 
     context 'when king is in check and opponent piece must be removed' do
-      fen_string = 'rnbqk1nr/ppppQppp/3p4/6b1/8/1PP5/PPP2PPP/RNB1KBNR'
+      fen_string = 'rnbqk1nr/ppppQppp/3p4/6b1/8/1PP5/PPP2PPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:bishop) { board.square_at(3, 6) }
 
@@ -116,7 +116,7 @@ describe Bishop do
     end
 
     context 'when any move would put king in check' do
-      fen_string = 'rnbq2nr/ppppp1pp/7k/8/7b/7R/PPPPPPP1/RNBQKBN1'
+      fen_string = 'rnbq2nr/ppppp1pp/7k/8/7b/7R/PPPPPPP1/RNBQKBN1 w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:bishop) { board.square_at(4, 7) }
 

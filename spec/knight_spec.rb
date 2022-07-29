@@ -40,7 +40,7 @@ describe Knight do
 
   describe '#generate_possible_moves' do
     context 'when any move would place king in check' do
-      fen_string = 'r1bq1bnr/pppp1ppp/4k3/4n3/8/4Q3/PPPPPPPP/RNB1KBNR'
+      fen_string = 'r1bq1bnr/pppp1ppp/4k3/4n3/8/4Q3/PPPPPPPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:knight) { board.square_at(3, 4) }
 
@@ -55,7 +55,7 @@ describe Knight do
     end
 
     context 'when king is in check and piece causing check must be captured' do
-      fen_string = 'r1bq1bnr/pppp1ppp/4k3/4n3/6Q1/8/PPPPPPPP/RNB1KBNR'
+      fen_string = 'r1bq1bnr/pppp1ppp/4k3/4n3/6Q1/8/PPPPPPPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:knight) { board.square_at(3, 4) }
 
@@ -70,7 +70,7 @@ describe Knight do
     end
 
     context 'when all possible move squares are empty' do
-      fen_string = 'r1bqkbnr/pp5p/8/4n3/8/8/2PPPPP1/RNB1KBNR'
+      fen_string = 'r1bqkbnr/pp5p/8/4n3/8/8/2PPPPP1/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:knight) { board.square_at(3, 4) }
 
@@ -85,7 +85,7 @@ describe Knight do
     end
 
     context 'when king is in check and path to king can be blocked' do
-      fen_string = 'r1bqkbnr/pp5p/3n2B1/8/8/8/2PPPPP1/RNB1K1NR'
+      fen_string = 'r1bqkbnr/pp5p/3n2B1/8/8/8/2PPPPP1/RNB1K1NR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:knight) { board.square_at(2, 3) }
 
@@ -100,7 +100,7 @@ describe Knight do
     end
 
     context 'when all possible move squares are occupied by own pieces' do
-      fen_string = '2bqkb2/1p3p2/3n4/1n3p2/2r1r1B1/8/2PPPPP1/RNB1K1NR'
+      fen_string = '2bqkb2/1p3p2/3n4/1n3p2/2r1r1B1/8/2PPPPP1/RNB1K1NR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:knight) { board.square_at(2, 3) }
 

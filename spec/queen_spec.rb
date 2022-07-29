@@ -44,7 +44,7 @@ describe Queen do
 
   describe '#generate_possible_moves' do
     context 'when surrounded by own pieces' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(7, 3) }
 
@@ -58,7 +58,7 @@ describe Queen do
     end
 
     context 'when an upward vertical path to an opponent piece is clear' do
-      fen_string = 'r1nqkbnr/pp1ppppp/2p5/8/2Q5/8/PPPPPPPP/RNB1KBNR'
+      fen_string = 'r1nqkbnr/pp1ppppp/2p5/8/2Q5/8/PPPPPPPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(4, 2) }
 
@@ -89,7 +89,7 @@ describe Queen do
     end
 
     context 'when moving the piece may lead to check' do
-      fen_string = 'r1n1kbnr/pp2pppp/2p1q3/8/8/4Q3/PPP2PPP/RNB1KBNR'
+      fen_string = 'r1n1kbnr/pp2pppp/2p1q3/8/8/4Q3/PPP2PPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(5, 4) }
 
@@ -112,7 +112,7 @@ describe Queen do
     end
 
     context 'when king is in check and path can be blocked' do
-      fen_string = 'r1n1kbnr/pp2pppp/4q3/8/6Q1/8/PPP2PPP/RNB1KBNR'
+      fen_string = 'r1n1kbnr/pp2pppp/4q3/8/6Q1/8/PPP2PPP/RNB1KBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(4, 6) }
 
@@ -135,7 +135,7 @@ describe Queen do
     end
 
     context 'when any move would leave king in check' do
-      fen_string = 'r3k1n1/4r3/8/2b1q3/4Q3/4K3/8/2B2BNR'
+      fen_string = 'r3k1n1/4r3/8/2b1q3/4Q3/4K3/8/2B2BNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(4, 4) }
 
@@ -150,7 +150,7 @@ describe Queen do
     end
 
     context 'when queen has king in check but king can escape' do
-      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR'
+      fen_string = '4k3/8/8/8/4Q3/1r1K4/3q4/2B2BNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:queen) { board.square_at(6, 3) }
 

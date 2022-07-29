@@ -46,7 +46,7 @@ describe King do
 
   describe '#generate_possible_moves' do
     context 'when surrounded by own pieces' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:white_king) { board.square_at(7, 0) }
 

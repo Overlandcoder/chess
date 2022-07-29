@@ -44,7 +44,7 @@ describe Pawn do
 
   describe '#generate_possible_moves' do
     context 'when the next square contains own piece' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/1P6/PP1PPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/1P6/PP1PPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:pawn) { board.square_at(6, 1) }
 
@@ -58,7 +58,7 @@ describe Pawn do
     end
 
     context 'when piece has made 0 moves from starting position' do
-      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:pawn) { board.square_at(1, 1) }
 
@@ -73,7 +73,7 @@ describe Pawn do
     end
 
     context 'when piece has made 1 move' do
-      fen_string = 'rnbqkbnr/p1pppppp/1p6/8/8/8/PPPPPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/p1pppppp/1p6/8/8/8/PPPPPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:pawn) { board.square_at(2, 1) }
 
@@ -88,7 +88,7 @@ describe Pawn do
     end
 
     context 'when a piece can be captured' do
-      fen_string = 'rnbqkbnr/p1pppppp/1p6/2P5/8/8/PP1PPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/p1pppppp/1p6/2P5/8/8/PP1PPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:pawn) { board.square_at(2, 1) }
 
@@ -103,7 +103,7 @@ describe Pawn do
     end
 
     context 'when path ahead blocked by opponent piece' do
-      fen_string = 'rnbqkbnr/p1pppppp/8/1p6/1P6/8/PP1PPPPP/RNBQKBNR'
+      fen_string = 'rnbqkbnr/p1pppppp/8/1p6/1P6/8/PP1PPPPP/RNBQKBNR w'
       let(:board) { Fen.new.to_board(fen_string) }
       let(:pawn) { board.square_at(4, 1) }
 
