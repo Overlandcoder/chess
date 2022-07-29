@@ -11,7 +11,7 @@ class Fen
   def to_board(fen_string)
     @board = Board.new
     expanded_rows(fen_string).each_with_index do |row, row_number|
-      row = row[0..-3] if row_number == 7
+      row = row[0..space_index(row)] if row_number == 7
       row.each_with_index do |char, col_number|
         coordinate = Coordinate.new(row: row_number, col: col_number)
         piece = piece_from_fen_char(char, col_number)
@@ -33,6 +33,10 @@ class Fen
         end
       end
     end
+  end
+
+  def space_index(string)
+    string.index(' ') - 1
   end
 
   def piece_from_fen_char(char, col_number)
@@ -66,11 +70,27 @@ class Fen
     end
   end
 
-  def current_player(fen_string)
+  def last_row(fen_string)
     expanded_rows(fen_string).each_with_index do |row, row_number|
       next unless row_number == 7
-      return :white if row.include?('w')
-      return :black if row.include?('b')
+      return row
     end
+  end
+
+  def current_player(fen_string)
+    row = last_row(fen_string)
+    return :white if row.include?('w')
+    return :black if row.include?('b')
+  end
+
+  def castling_rights(fen_string)
+    row = last_row(fen_string)
+    castling_string = ''
+
+    until row[-1].include?('w') || row[-1].include?('b')
+      castling_string += row[-1]
+      row.delete_at(-1)
+    end
+    castling_string.chars.sort.join.strip
   end
 end
