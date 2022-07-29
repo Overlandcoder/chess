@@ -5,7 +5,7 @@ class Rook < Piece
     @color, @number = color, number
     create_coordinate
     @possible_moves = []
-    @moves_made = count_moves_made
+    @can_castle = true
   end
 
   def to_s
@@ -28,10 +28,7 @@ class Rook < Piece
   def update_position(row = destination.row, col = destination.col)
     position.update_row(row)
     position.update_col(col)
-  end
-
-  def count_moves_made
-    starting_positions[number] == [position.row, position.col] ? 0 : 1
+    @can_castle = false if destination
   end
 
   def generate_possible_moves(board, checking_for_check = false)
