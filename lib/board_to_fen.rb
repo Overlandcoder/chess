@@ -53,16 +53,37 @@ class BoardToFen
     @current_player.color == :white ? ' w ' : ' b '
   end
 
+  # This is not technically for castling rights, it's just to keep track of
+  # can_castle, which indicates whether a castling piece has moved or not.
+  # This is the simplest/quickest way I thought of for handling this, for now.
   def add_castling_rights(color)
     return unless king(color).can_castle
 
     k_letter = color == :white ? 'K' : 'k'
     q_letter = color == :white ? 'Q' : 'q'
-    @fen_string += k_letter if KingsideCastle.new(@board, color).possible?
-    @fen_string += q_letter if QueensideCastle.new(@board, color).possible?
+    @fen_string += k_letter if r_rook(color) && r_rook(color).can_castle
+    @fen_string += q_letter if l_rook(color) && l_rook(color).can_castle
   end
 
   def king(color)
     @kings.find { |king| king.color == color }
+  end
+
+  def r_rook(color)
+    row = color == :white ? 7 : 0
+
+    @rooks.find do |rook|
+      rook.color == color && rook.position.row == row &&
+                    rook.position.col == 7
+    end
+  end
+
+  def l_rook(color)
+    row = color == :white ? 7 : 0
+
+    @rooks.find do |rook|
+      rook.color == color && rook.position.row == row &&
+                    rook.position.col == 0
+    end
   end
 end
