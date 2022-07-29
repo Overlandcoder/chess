@@ -121,6 +121,7 @@ class Game
 
   def piece_selection
     @piece_position = choose_piece
+    return if @piece_position == 'save'
     @chosen_piece = board.square_at(piece_position.row, piece_position.col)
   end
 
@@ -264,7 +265,7 @@ class Game
     @fname = gets.chomp
     fen_string = BoardToFen.new(board, @current_player).convert
     yaml = YAML::dump(fen_string)
-    saved = File.new("../saved/#{@fname}.yaml", "w")
+    saved = File.new("saved/#{@fname}.yaml", "w")
     saved.write(yaml)
     puts "Game saved."
     'save'
