@@ -308,7 +308,6 @@ class Game
 
   def assign_castling_rights(fen_string)
     castling_string = Fen.new.castling_rights(fen_string)
-    p castling_string
     king(:white).can_castle = castling_string.include?('K') ? true : false
     king(:white).can_castle = castling_string.include?('Q') ? true : false
     r_rook(:white).can_castle = castling_string.include?('K') ? true : false
