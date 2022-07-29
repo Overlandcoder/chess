@@ -1,6 +1,9 @@
 class BoardToFen
-  def initialize(board, current_player)
-    @board, @current_player = board, current_player
+  def initialize(board, current_player, kings, rooks)
+    @board = board
+    @current_player = current_player
+    @kings = kings
+    @rooks = rooks
   end
 
   def convert
@@ -13,6 +16,9 @@ class BoardToFen
       end
     end
     @fen_string += current_player_to_fen
+    add_castling_rights(:white)
+    add_castling_rights(:black)
+    p @fen_string
     @fen_string
   end
 
@@ -44,6 +50,19 @@ class BoardToFen
   end
 
   def current_player_to_fen
-    @current_player.color == :white ? ' w' : ' b'
+    @current_player.color == :white ? ' w ' : ' b '
+  end
+
+  def add_castling_rights(color)
+    return unless king(color).can_castle
+
+    k_letter = color == :white ? 'K' : 'k'
+    q_letter = color == :white ? 'Q' : 'q'
+    @fen_string += k_letter if KingsideCastle.new(@board, color).possible?
+    @fen_string += q_letter if QueensideCastle.new(@board, color).possible?
+  end
+
+  def king(color)
+    @kings.find { |king| king.color == color }
   end
 end
