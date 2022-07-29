@@ -8,7 +8,7 @@ class QueensideCastle
   end
 
   def possible?
-    return false unless rook && rook.moves_made.zero?
+    return false unless rook && rook.can_castle
 
     queenside_squares_empty? && !queenside_squares_under_attack?
   end
