@@ -6,7 +6,7 @@ class King < Piece
     @color, @number = color, number
     create_coordinate
     @possible_moves = []
-    @moves_made = 0
+    @can_castle = true
   end
 
   def to_s
@@ -29,7 +29,7 @@ class King < Piece
   def update_position(row = destination.row, col = destination.col)
     position.update_row(row)
     position.update_col(col)
-    @moves_made += 1
+    @can_castle = false if destination
   end
 
   def generate_possible_moves(board, checking_for_check = false)
@@ -49,7 +49,8 @@ class King < Piece
   end
 
   def add_castling_moves(board)
-    return if king_in_check?(board) || !moves_made.zero?
+    return if king_in_check?(board)
+    return unless can_castle
 
     add_kingside_castling_moves(board)
     add_queenside_castling_moves(board)
@@ -60,13 +61,13 @@ class King < Piece
   end
 
   def castling_kingside?(board)
-    return false unless destination.col == 6 && moves_made.zero?
+    return false unless destination.col == 6 && can_castle
 
     KingsideCastle.new(board, color).possible?
   end
 
   def castling_queenside?(board)
-    return false unless destination.col == 3 && moves_made.zero?
+    return false unless destination.col == 3 && can_castle
 
     QueensideCastle.new(board, color).possible?
   end
