@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 class Board
   attr_reader :white_pieces, :black_pieces
 

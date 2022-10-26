@@ -14,7 +14,7 @@ module Check
       moves_to_delete << move if king_in_check?(board) && !@current_piece.is_a?(King)
       remove_king_checks(board)
     end
-#
+
     moves_to_delete.each { |move| @current_piece.possible_moves.delete(move) }
   end
 
@@ -65,7 +65,6 @@ module Check
 
   def no_moves_left?(checking_stalemate = false)
     board.pieces(@current_player_color).all? do |piece|
-      binding.pry if checking_stalemate
       piece.generate_possible_moves(board)
       piece.possible_moves.length.zero?
     end

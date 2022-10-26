@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pry-byebug'
 
 class Game
   attr_reader :board, :current_player, :player1, :player2, :piece_position,
