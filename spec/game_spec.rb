@@ -59,7 +59,7 @@ describe Game do
         allow(game).to receive(:current_player).and_return(player1)
         allow(game).to receive(:gets).and_return('H8', 'A1')
         allow(game).to receive(:board).and_return(board)
-        allowed_message = "White, select a piece to move (enter 'retry' to reselect):"
+        allowed_message = "White, select a piece to move (enter 'retry' to reselect or 'save' to save):"
         allow(game).to receive(:puts).with(allowed_message)
       end
 
