@@ -29,6 +29,9 @@ If you have Ruby installed:
 
 If you wish to run the tests, you must have RSpec installed and type `rspec` in the terminal. The tests were written using RSpec 3.11.
 
+## Known Bugs
+- If playing a saved game, further saving is not possible
+
 ## Possible Improvements
 - Improve test coverage by writing more tests, especially integration tests
 - Allow players to start a game from a FEN string
@@ -40,3 +43,7 @@ If you wish to run the tests, you must have RSpec installed and type `rspec` in 
 ## Reflections
 
 This was an absolute mammoth of a project. There were many long periods of struggle and numerous multi-hour debugging sessions. However, despite the difficulties and intense obstacles that had to be overcome, this was an incredibly fun project.
+
+(more to be added later)
+
+## Acknowledgements
