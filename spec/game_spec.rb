@@ -59,12 +59,12 @@ describe Game do
         allow(game).to receive(:current_player).and_return(player1)
         allow(game).to receive(:gets).and_return('H8', 'A1')
         allow(game).to receive(:board).and_return(board)
-        allowed_message = "White, select a piece to move (enter 'retry' to reselect or 'save' to save):"
+        allowed_message = "White, select a piece to move (enter 'save' to save):"
         allow(game).to receive(:puts).with(allowed_message)
       end
 
       it 'displays error message once' do
-        error_message = "Please select your own piece!"
+        error_message = 'Please select your own piece!'
         expect(game).to receive(:puts).with(error_message).once
         game.choose_piece
       end
@@ -78,7 +78,7 @@ describe Game do
       before do
         game.instance_variable_set(:@chosen_piece, rook)
         allow(rook).to receive(:valid_move?).and_return(true)
-        allow(game).to receive(:puts).with('Enter the position to move the piece to:')
+        allow(game).to receive(:puts).with("Enter the position to move the piece to (enter 'retry' to select another piece):")
         allow(game).to receive(:gets).and_return('a8')
         allow(rook).to receive(:destination=)
       end
@@ -110,7 +110,7 @@ describe Game do
       end
 
       it 'displays error message twice' do
-        allow(game).to receive(:puts).with('Enter the position to move the piece to:')
+        allow(game).to receive(:puts).with("Enter the position to move the piece to (enter 'retry' to select another piece):")
         error_message = 'Invalid move, please choose another square:'
         expect(game).to receive(:puts).with(error_message).twice
         game.choose_destination

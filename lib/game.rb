@@ -141,7 +141,7 @@ class Game
   end
 
   def choose_piece
-    puts "#{current_player.color.capitalize}, select a piece to move (enter 'retry' to reselect or 'save' to save):"
+    puts "#{current_player.color.capitalize}, select a piece to move (enter 'save' to save):"
     user_input = gets.chomp.capitalize
     return save_game if user_input == 'Save'
 
@@ -153,7 +153,7 @@ class Game
   end
 
   def choose_destination
-    puts 'Enter the position to move the piece to:'
+    puts "Enter the position to move the piece to (enter 'retry' to select another piece):"
     user_input = gets.chomp.capitalize
     return reselect if user_input == 'Retry'
 
