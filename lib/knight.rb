@@ -9,7 +9,7 @@ class Knight < Piece
   end
 
   def to_s
-    color == :white ? '♞' : "\u001b[30m♞"
+    color == :white ? "♞" : "\u001b[30m♞"
   end
 
   def starting_positions
