@@ -141,7 +141,7 @@ class Game
   end
 
   def choose_piece
-    puts "#{current_player.color.capitalize}, select a piece to move (enter 'save' to save):"
+    puts "\n#{current_player.color.capitalize}, select a piece to move (enter 'save' to save):"
     user_input = gets.chomp.capitalize
     return save_game if user_input == 'Save'
 
@@ -153,7 +153,7 @@ class Game
   end
 
   def choose_destination
-    puts "Enter the position to move the piece to (enter 'retry' to select another piece):"
+    puts "\nEnter the position to move the piece to (enter 'retry' to select another piece):"
     user_input = gets.chomp.capitalize
     return reselect if user_input == 'Retry'
 
@@ -288,7 +288,7 @@ class Game
   def choose_saved_game
     puts "\nList of saved games:"
     Dir.entries('saved_games').each { |file_name| puts file_name unless file_name[0] == "." }
-    puts "\nEnter the name of the saved game you wish to play:"
+    puts "\nEnter the full name of the saved game you wish to play (enter 'test.yaml' if you named it 'test'):"
     gets.chomp
   end
 
