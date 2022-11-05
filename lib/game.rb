@@ -12,8 +12,8 @@ class Game
   end
 
   def setup
-    puts intro_message
     choose_new_or_saved_game
+    puts intro_message
     create_players
     create_pieces(player1.color)
     create_pieces(player2.color)
@@ -59,6 +59,7 @@ class Game
       board.display
       piece_selection
       break if @piece_position == 'save'
+
       board.highlight_piece(chosen_piece.position)
       chosen_piece.generate_possible_moves(board)
       board.highlight_possible_moves(chosen_piece.possible_moves)
@@ -87,7 +88,7 @@ class Game
   def make_move
     reset_last_moved_pawn
     remove_opponent_piece
-    move_castling_rook if chosen_piece.is_a?(King) 
+    move_castling_rook if chosen_piece.is_a?(King)
     update_board
     update_piece_position
     clear_old_position
@@ -121,6 +122,7 @@ class Game
     # rename piece_position or maybe remove it altogether later
     @piece_position = choose_piece
     return if @piece_position == 'save'
+
     @chosen_piece = board.square_at(piece_position.row, piece_position.col)
   end
 
@@ -249,10 +251,12 @@ class Game
 
   def intro_message
     <<~INTRO
-      Welcome to Chess!
-      This is a two-player game. To give you an idea of how the grid positioning
-      works, the bottom-left rook is located at A1. When asked to choose a piece
-      to move, enter A1 or a1 for that rook, for example.
+      \n\nWelcome to Chess!
+
+      Each turn, you must:
+      1. Enter the coordinates of the piece you wish to move
+      2. Enter the coordinates of any valid move (highlighted in green)\n
+      This is a two-player game. To give you an idea of how the grid positioning works, you would enter a1 to select the bottom-left rook.\n
     INTRO
   end
 
@@ -263,21 +267,18 @@ class Game
   end
 
   def play_new_or_saved_game(choice)
-    if choice == 'new'
-      puts "\n\u001b[42m"
-      puts "\n\u001b[42m A new game will now begin. Good luck and have fun! \n\u001b[0m\n\n"
-    elsif choice == 'saved'
-      saved_game = choose_saved_game
-      play_saved_game(saved_game)
-    end
+    return if choice == 'new'
+
+    saved_game = choose_saved_game
+    play_saved_game(saved_game)
   end
 
   def save_game
-    puts "Enter a name to save your game file as:"
+    puts 'Enter a name to save your game file as:'
     @fname = gets.chomp
     fen_string = BoardToFen.new(board, @current_player, kings, rooks).convert
     yaml = YAML::dump(fen_string)
-    Dir.mkdir "saved_games" unless Dir.exist? 'saved_games'
+    Dir.mkdir 'saved_games' unless Dir.exist? 'saved_games'
     saved = File.new("saved_games/#{@fname}.yaml", 'w')
     saved.write(yaml)
     puts 'Game saved.'
@@ -286,13 +287,13 @@ class Game
 
   def choose_saved_game
     puts "\nList of saved games:"
-    Dir.entries("saved_games").each { |file_name| puts file_name unless file_name[0] == "." }
+    Dir.entries('saved_games').each { |file_name| puts file_name unless file_name[0] == "." }
     puts "\nEnter the name of the saved game you wish to play:"
     gets.chomp
   end
 
   def play_saved_game(game)
-    saved_game_fen_string = YAML.load(File.read("saved_games/#{game}"))
+    saved_game_fen_string = YAML.safe_load(File.read("saved_games/#{game}"))
     @board = Fen.new.to_board(saved_game_fen_string)
     assign_current_player(saved_game_fen_string)
     assign_castling_rights(saved_game_fen_string)
