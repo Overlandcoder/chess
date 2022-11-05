@@ -18,7 +18,6 @@ class BoardToFen
     @fen_string += current_player_to_fen
     add_castling_rights(:white)
     add_castling_rights(:black)
-    p @fen_string
     @fen_string
   end
 
