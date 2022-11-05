@@ -277,21 +277,22 @@ class Game
     @fname = gets.chomp
     fen_string = BoardToFen.new(board, @current_player, kings, rooks).convert
     yaml = YAML::dump(fen_string)
-    saved = File.new("saved/#{@fname}.yaml", "w")
+    Dir.mkdir "saved_games" unless Dir.exist? 'saved_games'
+    saved = File.new("saved_games/#{@fname}.yaml", 'w')
     saved.write(yaml)
-    puts "Game saved."
+    puts 'Game saved.'
     'save'
   end
 
   def choose_saved_game
     puts "\nList of saved games:"
-    puts Dir["saved/*"]
+    Dir.entries("saved_games").each { |file_name| puts file_name unless file_name[0] == "." }
     puts "\nEnter the name of the saved game you wish to play:"
     gets.chomp
   end
 
   def play_saved_game(game)
-    saved_game_fen_string = YAML.load(File.read("saved/#{game}"))
+    saved_game_fen_string = YAML.load(File.read("saved_games/#{game}"))
     @board = Fen.new.to_board(saved_game_fen_string)
     assign_current_player(saved_game_fen_string)
     assign_castling_rights(saved_game_fen_string)
