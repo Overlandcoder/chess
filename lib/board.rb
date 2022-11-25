@@ -45,10 +45,10 @@ class Board
     @grid[row][col] = nil
   end
 
-  def display(highlighted = false)
+  def display(highlighted: false)
     add_background_color unless highlighted
     puts column_headings
-    (0..7).each { |row| puts "  #{8 - row} #{@grid_clone[row].join} #{8 - row}  " }
+    8.times { |row| puts "  #{8 - row} #{@grid_clone[row].join} #{8 - row}  " }
     puts column_headings
   end
 
@@ -87,7 +87,7 @@ class Board
       piece = @grid[row][col]
       @grid_clone[row][col] = BRIGHT_GREEN_BG + " #{piece || ' '} " + RESET_CODE
     end
-    display(true)
+    display(highlighted: true)
   end
 
   def square_at(row, column)
