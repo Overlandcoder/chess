@@ -1,10 +1,10 @@
 class Board
   attr_reader :white_pieces, :black_pieces
 
-  TAN_BG = "\e[48;2;#{181};#{183};#{147}m".freeze
-  GREEN_BG = "\e[48;2;#{84};#{140};#{42}m".freeze
-  ORANGE_BG = "\e[48;2;#{255};#{181};#{87}m".freeze
-  BRIGHT_GREEN_BG = "\e[48;2;#{193};#{255};#{134}m".freeze
+  TAN_BG = "\e[48;2;181;183;147m".freeze
+  GREEN_BG = "\e[48;2;84;140;42m".freeze
+  ORANGE_BG = "\e[48;2;255;181;87m".freeze
+  BRIGHT_GREEN_BG = "\e[48;2;193;255;134m".freeze
   RESET_CODE = "\u001b[0m".freeze
 
   def initialize
