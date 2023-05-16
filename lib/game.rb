@@ -113,7 +113,7 @@ class Game
     puts 'Time to promote this pawn! Enter one of the following piece names...'
     puts 'queen, rook, bishop or knight:'
     piece_type = gets.chomp.to_sym
-    new_piece = Piece.for(piece_type, current_player.color, 0, board)
+    new_piece = Piece.for(piece_type, current_player.color, 0)
     board.place(chosen_piece.position, new_piece)
     new_piece.update_position(chosen_piece.position.row, chosen_piece.position.col)
   end
